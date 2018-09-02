@@ -1,35 +1,35 @@
-/*
+﻿/*
 ==============================================================
  Name        : macro.h
- Copyright   : Copyright (C) ����c��w�}�C�N���}�E�X�N���u
- Description : �}�N���錾�ł��D�ϐ��^�Ƃ��Ŋy�Ɏg����悤�ɂȂ�܂��D
+ Copyright   : Copyright (C) 早稲田大学マイクロマウスクラブ
+ Description : マクロ宣言です．変数型とかで楽に使えるようになります．
 
-  �X�V����
- 2015/12/13		�R��	�R�����g�ǉ�
+  更新履歴
+ 2015/12/13		山上	コメント追加
 ==============================================================
 */
 
-#ifndef MACRO_H_												//�Ή��t�@�C���ň�x���ǂݍ��܂�Ă��Ȃ��ꍇ�ȉ����`
-	#define MACRO_H_											//�ǂݍ��񂾂��Ƃ�\��
+#ifndef MACRO_H_												//対応ファイルで一度も読み込まれていない場合以下を定義
+	#define MACRO_H_											//読み込んだことを表す
 
-	//�����̃v���O�����𓮂����̂ɕK�v�ȃ}�N���B�o�Ă�����ǂޒ��x�ł����ł��B
-	#define _BV(bit)			(1<<(bit))						//�w��r�b�g��1�����փr�b�g�V�t�g�����l
-	#define cbi(addr,bit)	addr &= ~_BV(bit)					//�w�背�W�X�^�̎w��r�b�g��0�ɂ���
-	#define sbi(addr,bit)	addr |= _BV(bit)					//�w�背�W�X�^�̎w��r�b�g��1�ɂ���
-	#define bit_is_set(addr,bit)	(addr & _BV(bit) ? 1 : 0)	//�w�背�W�X�^�̎w��r�b�g��1�Ȃ�1�A0�Ȃ�0
-	#define bit_is_clear(addr,bit)	(addr & _BV(bit) ? 0 : 1)	//�w�背�W�X�^�̎w��r�b�g��0�Ȃ�1�A1�Ȃ�0
-	#define outp(data,addr)	addr = (data)						//�w�背�W�X�^���w��f�[�^�ɂ���
-	#define inp(addr)		(addr)								//�w�背�W�X�^�����o��
-	#define outb(addr,data)	addr = (data)						//�w�背�W�X�^���w��f�[�^�ɂ���
-	#define inb(addr)		(addr)								//�w�背�W�X�^�����o��
-	#define PRG_RDB(addr)	(pgm_read_byte(addr))				//�v���O�����������̓ǂݏo���H
+	//旧環境のプログラムを動かすのに必要なマクロ。出てきたら読む程度でいいです。
+	#define _BV(bit)			(1<<(bit))						//指定ビット分1を左へビットシフトした値
+	#define cbi(addr,bit)	addr &= ~_BV(bit)					//指定レジスタの指定ビットを0にする
+	#define sbi(addr,bit)	addr |= _BV(bit)					//指定レジスタの指定ビットを1にする
+	#define bit_is_set(addr,bit)	(addr & _BV(bit) ? 1 : 0)	//指定レジスタの指定ビットが1なら1、0なら0
+	#define bit_is_clear(addr,bit)	(addr & _BV(bit) ? 0 : 1)	//指定レジスタの指定ビットが0なら1、1なら0
+	#define outp(data,addr)	addr = (data)						//指定レジスタを指定データにする
+	#define inp(addr)		(addr)								//指定レジスタを取り出す
+	#define outb(addr,data)	addr = (data)						//指定レジスタを指定データにする
+	#define inb(addr)		(addr)								//指定レジスタを取り出す
+	#define PRG_RDB(addr)	(pgm_read_byte(addr))				//プログラムメモリの読み出し？
 
 
-	//�^�̒u�������A�����L�̌^����ʓI�Ȍ^�ɒu��������B�ڐA���ɂ͂�����ς���΂����̂Ŋy�ɂȂ�(�S���u��������Ă��Ȃ��C�����邯��...)
+	//型の置き換え、環境特有の型を一般的な型に置き換える。移植時にはここを変えればいいので楽になる(全部置き換わっていない気もするけど...)
 	// 8-bit, int8_t=signed char
 /*	typedef char			CHAR;
 	typedef unsigned char	UCHAR;
-	// 16-bit, SHORT�Ȃ�ĂȂ�����
+	// 16-bit, SHORTなんてなかった
 	typedef int16_t			INT;
 	typedef uint16_t		UINT;
 	// 32-bit
@@ -51,24 +51,24 @@
 	typedef unsigned long	ULONG;
 	typedef unsigned long	DWORD;
 */
-	// �u�[�����Z�q
+	// ブール演算子
 	typedef enum { FALSE = 0, TRUE } BOOL;
 
 
-	//�����̃v���O�����𓮂����̂ɕK�v�ȃ}�N���B�����g���ĂȂ��ł�
-	#ifndef	NOP														//�ҋ@��\���}�N��
-	#define	NOP		asm volatile("nop\n"::)							//�A�Z���u������𒼐ڏ����Ă�H
+	//旧環境のプログラムを動かすのに必要なマクロ。多分使ってないです
+	#ifndef	NOP														//待機を表すマクロ
+	#define	NOP		asm volatile("nop\n"::)							//アセンブリ言語を直接書いてる？
 	#endif
-	#ifndef SLEEP													//�ҋ@��\���}�N��
-	#define	SLEEP	asm volatile("sleep\n"::)						//�A�Z���u������𒼐ڏ����Ă�H
+	#ifndef SLEEP													//待機を表すマクロ
+	#define	SLEEP	asm volatile("sleep\n"::)						//アセンブリ言語を直接書いてる？
 	#endif
 
-	//���̑���`
-	#ifndef NULL													//NULL���Ή��t�@�C���Œ�`����Ă��Ȃ��ꍇ
-	#define NULL    0												//0�Ƃ��Ē�`����
+	//その他定義
+	#ifndef NULL													//NULLが対応ファイルで定義されていない場合
+	#define NULL    0												//0として定義する
 	#endif
 
 	// Math 2011/03/29
-	#define ABS(x)	((x) < 0 ? -(x) : (x))							//��Βl��Ԃ��}�N��
+	#define ABS(x)	((x) < 0 ? -(x) : (x))							//絶対値を返すマクロ
 
 #endif /* MACRO_H_ */

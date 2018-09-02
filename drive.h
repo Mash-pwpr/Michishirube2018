@@ -1,92 +1,92 @@
-/*
+ï»¿/*
 ==============================================================
  Name        : drive.h
- Copyright   : Copyright (C) ‘ˆî“c‘åŠwƒ}ƒCƒNƒƒ}ƒEƒXƒNƒ‰ƒu
- Description : ‘–sŠÖ˜A‚ÌŠÖ”‚½‚¿‚Å‚·D
+ Copyright   : Copyright (C) æ—©ç¨²ç”°å¤§å­¦ãƒã‚¤ã‚¯ãƒ­ãƒã‚¦ã‚¹ã‚¯ãƒ©ãƒ–
+ Description : èµ°è¡Œé–¢é€£ã®é–¢æ•°ãŸã¡ã§ã™ï¼
 
-  XV—š—ğ
- 2015/12/11		Rã	ƒRƒƒ“ƒg‚ÆSLA7078—p‚Ìƒ}ƒNƒ‚ğ’Ç‰Á
- 2016/2/24		Rã	2016”N“x—p‚Éƒsƒ“İ’è‚ğ•ÏX
+  æ›´æ–°å±¥æ­´
+ 2015/12/11		å±±ä¸Š	ã‚³ãƒ¡ãƒ³ãƒˆã¨SLA7078ç”¨ã®ãƒã‚¯ãƒ­ã‚’è¿½åŠ 
+ 2016/2/24		å±±ä¸Š	2016å¹´åº¦ç”¨ã«ãƒ”ãƒ³è¨­å®šã‚’å¤‰æ›´
 ==============================================================
 */
 
-/*ƒwƒbƒ_ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ*/
+/*ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿*/
 #include "port.h"
 
 #ifndef DRIVE_H_
 
-	#define DRIVE_H_									//“Ç‚İ‚ñ‚¾‚±‚Æ‚ğ•\‚·
+	#define DRIVE_H_									//èª­ã¿è¾¼ã‚“ã ã“ã¨ã‚’è¡¨ã™
 
 /*============================================================
-		Šeí’è”¥•Ï”éŒ¾
+		å„ç¨®å®šæ•°ï½¥å¤‰æ•°å®£è¨€
 ============================================================*/
-	//----ƒhƒ‰ƒCƒoICŠÖ˜A----
-	#define MDR_CLK_L	P0_8		//ƒNƒƒbƒN’[q¶
-	#define MDR_CLK_R	P1_9		//ƒNƒƒbƒN’[q‰E
-// ãOK
+	//----ãƒ‰ãƒ©ã‚¤ãƒICé–¢é€£----
+	#define MDR_CLK_L	P0_8		//ã‚¯ãƒ­ãƒƒã‚¯ç«¯å­å·¦
+	#define MDR_CLK_R	P1_9		//ã‚¯ãƒ­ãƒƒã‚¯ç«¯å­å³
+// ä¸ŠOK
 
-	#define MDR_CW_L	P2_2		//IC•ª”z‰ñ˜H‚ÌCW/CCW¶
-	#define MDR_CW_R	P3_5		//IC•ª”z‰ñ˜H‚ÌCW/CCW‰E
-	#define MDR_REF		P2_9		//ƒŠƒtƒ@ƒŒƒ“ƒX
+	#define MDR_CW_L	P2_2		//ICåˆ†é…å›è·¯ã®CW/CCWå·¦
+	#define MDR_CW_R	P3_5		//ICåˆ†é…å›è·¯ã®CW/CCWå³
+	#define MDR_REF		P2_9		//ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹
 
-	#define MDR_M1		P0_6		//—ã¥Ø‚è‘Ö‚¦ƒƒWƒbƒN1
-	#define MDR_M2		P3_4		//—ã¥Ø‚è‘Ö‚¦ƒƒWƒbƒN2
-	#define MDR_M3		P2_1		//—ã¥Ø‚è‘Ö‚¦ƒƒWƒbƒN3
+	#define MDR_M1		P0_6		//åŠ±ç£åˆ‡ã‚Šæ›¿ãˆãƒ­ã‚¸ãƒƒã‚¯1
+	#define MDR_M2		P3_4		//åŠ±ç£åˆ‡ã‚Šæ›¿ãˆãƒ­ã‚¸ãƒƒã‚¯2
+	#define MDR_M3		P2_1		//åŠ±ç£åˆ‡ã‚Šæ›¿ãˆãƒ­ã‚¸ãƒƒã‚¯3
 
-	/* —ã¥Ø‚è‘Ö‚¦ƒƒWƒbƒN
-	ESLA7078MPRT
-	  M1 | M2 | M3 |—ã¥ƒ‚[ƒh
-	   L |  L |  L | 2‘Š—ã¥(Mode8ŒÅ’è)
-	   L |  H |  L | 2‘Š—ã¥(ModeFŒÅ’è)
-	   H |  L |  L | 1-2‘Š—ã¥(2•ªŠ„)
-	   H |  H |  L | 1-2‘Š—ã¥(ModeFŒÅ’è)
-	   L |  L |  H |  W1-2‘Ši 4•ªŠ„j
-	   L |  H |  H | 4W1-2‘Ši16•ªŠ„j
-	   H |  L |  H | 2W1-2‘Ši 8•ªŠ„j
-	   H |  H |  H | ƒXƒŠ[ƒvƒ‚[ƒh2
+	/* åŠ±ç£åˆ‡ã‚Šæ›¿ãˆãƒ­ã‚¸ãƒƒã‚¯
+	ãƒ»SLA7078MPRT
+	  M1 | M2 | M3 |åŠ±ç£ãƒ¢ãƒ¼ãƒ‰
+	   L |  L |  L | 2ç›¸åŠ±ç£(Mode8å›ºå®š)
+	   L |  H |  L | 2ç›¸åŠ±ç£(ModeFå›ºå®š)
+	   H |  L |  L | 1-2ç›¸åŠ±ç£(2åˆ†å‰²)
+	   H |  H |  L | 1-2ç›¸åŠ±ç£(ModeFå›ºå®š)
+	   L |  L |  H |  W1-2ç›¸ï¼ˆ 4åˆ†å‰²ï¼‰
+	   L |  H |  H | 4W1-2ç›¸ï¼ˆ16åˆ†å‰²ï¼‰
+	   H |  L |  H | 2W1-2ç›¸ï¼ˆ 8åˆ†å‰²ï¼‰
+	   H |  H |  H | ã‚¹ãƒªãƒ¼ãƒ—ãƒ¢ãƒ¼ãƒ‰2
 
-	ESLA7073MPRT
-	  M1 | M2 | —ã¥ƒ‚[ƒh
-	   L |  L | 4W1-2‘Ši16•ªŠ„j
-	   L |  H | 2W1-2‘Ši 8•ªŠ„j
-	   H |  L |  W1-2‘Ši 4•ªŠ„j
-	   H |  H |   1-2‘Ši 2•ªŠ„j
+	ãƒ»SLA7073MPRT
+	  M1 | M2 | åŠ±ç£ãƒ¢ãƒ¼ãƒ‰
+	   L |  L | 4W1-2ç›¸ï¼ˆ16åˆ†å‰²ï¼‰
+	   L |  H | 2W1-2ç›¸ï¼ˆ 8åˆ†å‰²ï¼‰
+	   H |  L |  W1-2ç›¸ï¼ˆ 4åˆ†å‰²ï¼‰
+	   H |  H |   1-2ç›¸ï¼ˆ 2åˆ†å‰²ï¼‰
 	*/
 
 
 
-	//----“®ì•ûŒüŠÖ˜A----
-	#define MT_FWD_L	1			//CW/CCW‚Å‘O‚Éi‚Şo—Í(¶)
-	#define MT_BACK_L	0			//CW/CCW‚ÅŒã‚ë‚Éi‚Şo—Í(¶)
-	#define MT_FWD_R	1			//CW/CCW‚Å‘O‚Éi‚Şo—Í(‰E)
-	#define MT_BACK_R	0		//CW/CCW‚ÅŒã‚ë‚Éi‚Şo—Í(‰E)
+	//----å‹•ä½œæ–¹å‘é–¢é€£----
+	#define MT_FWD_L	1			//CW/CCWã§å‰ã«é€²ã‚€å‡ºåŠ›(å·¦)
+	#define MT_BACK_L	0			//CW/CCWã§å¾Œã‚ã«é€²ã‚€å‡ºåŠ›(å·¦)
+	#define MT_FWD_R	1			//CW/CCWã§å‰ã«é€²ã‚€å‡ºåŠ›(å³)
+	#define MT_BACK_R	0		//CW/CCWã§å¾Œã‚ã«é€²ã‚€å‡ºåŠ›(å³)
 
-	#define FORWARD	0x00			//‘OiŒü‚«
-	#define BACK	0x11			//Œã‘Ş
-	#define TURN_L	0x01			//‰ñ“]Œü‚«(¶)
-	#define TURN_R	0x10			//‰ñ“]Œü‚«(‰E)
+	#define FORWARD	0x00			//å‰é€²å‘ã
+	#define BACK	0x11			//å¾Œé€€
+	#define TURN_L	0x01			//å›è»¢å‘ã(å·¦)
+	#define TURN_R	0x10			//å›è»¢å‘ã(å³)
 
-	//----•ûŒü“]Š·—p’è”----
-	#define DIR_TURN_R90	0x01	//‰E90“x‰ñ“]
-	#define DIR_TURN_L90	0xff	//¶90“x‰ñ“]
-	#define DIR_TURN_180	0x02	//180“x‰ñ“]
+	//----æ–¹å‘è»¢æ›ç”¨å®šæ•°----
+	#define DIR_TURN_R90	0x01	//å³90åº¦å›è»¢
+	#define DIR_TURN_L90	0xff	//å·¦90åº¦å›è»¢
+	#define DIR_TURN_180	0x02	//180åº¦å›è»¢
 
 
-	//====•Ï”====
-#ifdef EXTERN										//‘Î‰ƒtƒ@ƒCƒ‹‚ÅEXTERN‚ª’è‹`‚³‚ê‚Ä‚¢‚éê‡
-	/*ƒOƒ[ƒoƒ‹•Ï”‚Ì’è‹`*/
+	//====å¤‰æ•°====
+#ifdef EXTERN										//å¯¾å¿œãƒ•ã‚¡ã‚¤ãƒ«ã§EXTERNãŒå®šç¾©ã•ã‚Œã¦ã„ã‚‹å ´åˆ
+	/*ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®å®šç¾©*/
 	const uint16_t table[] = {
 		#include "table.h"
-	};								//table.h‚É“\‚è•t‚¯‚½’l‚ğ•Û‚·‚é”z—ñ
+	};								//table.hã«è²¼ã‚Šä»˜ã‘ãŸå€¤ã‚’ä¿æŒã™ã‚‹é…åˆ—
 	volatile float vel_R, vel_L, xR, xL;
-	volatile float targ_vel_R,targ_vel_L;				//–Ú•W‘¬“x
+	volatile float targ_vel_R,targ_vel_L;				//ç›®æ¨™é€Ÿåº¦
 	volatile float dif_vel_R,dif_vel_L;
 	volatile float dif_pre_vel_R, dif_pre_vel_L;
 	volatile uint16_t kpvR,kpdR,kpvL,kpdL;
 	
-	volatile uint16_t t_cnt_l, t_cnt_r,time, ms_time;		//ƒe[ƒuƒ‹ƒJƒEƒ“ƒ^
-	volatile uint16_t minindex, maxindex;				//Å’á‘¬“xEÅ‘å‘¬“x
-	volatile uint16_t interval_l, interval_r;			//¶‰EƒCƒ“ƒ^[ƒoƒ‹
+	volatile uint16_t t_cnt_l, t_cnt_r,time, ms_time;		//ãƒ†ãƒ¼ãƒ–ãƒ«ã‚«ã‚¦ãƒ³ã‚¿
+	volatile uint16_t minindex, maxindex;				//æœ€ä½é€Ÿåº¦ãƒ»æœ€å¤§é€Ÿåº¦
+	volatile uint16_t interval_l, interval_r;			//å·¦å³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«
 	
 	volatile float duty_r,duty_l,Kvolt,duty_oR,duty_oL;
 	volatile float accel_r,accel_l;
@@ -94,31 +94,31 @@
 	volatile uint16_t test_valR1[1000],test_valL1[1000],test_valR2[1000],test_valL2[1000]; 
 	
 	
-	volatile uint16_t pulse_l, pulse_r, pulse_pre_r, pulse_pre_l;					//¶‰Eƒpƒ‹ƒXƒJƒEƒ“ƒg
+	volatile uint16_t pulse_l, pulse_r, pulse_pre_r, pulse_pre_l;					//å·¦å³ãƒ‘ãƒ«ã‚¹ã‚«ã‚¦ãƒ³ãƒˆ
 	volatile int32_t dif_pulse_r, dif_pulse_l,pulse_sum_l, pulse_sum_r;
 	float totalR_mm, totalL_mm,totalR_pre_mm,totalL_pre_mm;
-	int16_t	sen_dl, sen_dr;							//”ä—á§Œä—Ê
+	int16_t	sen_dl, sen_dr;							//æ¯”ä¾‹åˆ¶å¾¡é‡
 	
 	
-#else									//‘Î‰ƒtƒ@ƒCƒ‹‚ÅEXTERN‚ª’è‹`‚³‚ê‚Ä‚¢‚È‚¢ê‡
-	/*ƒOƒ[ƒoƒ‹•Ï”‚ÌéŒ¾*/
+#else									//å¯¾å¿œãƒ•ã‚¡ã‚¤ãƒ«ã§EXTERNãŒå®šç¾©ã•ã‚Œã¦ã„ãªã„å ´åˆ
+	/*ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®å®£è¨€*/
 	extern const uint16_t table[];				
 	extern volatile float dif_pre_vel_R, dif_pre_vel_L;
-	extern volatile float vel_R, vel_L, xR, xL;		//—¼—Ö‘¬“x
-	extern volatile float targ_vel_R,targ_vel_L;	//–Ú•W‘¬“x
+	extern volatile float vel_R, vel_L, xR, xL;		//ä¸¡è¼ªé€Ÿåº¦
+	extern volatile float targ_vel_R,targ_vel_L;	//ç›®æ¨™é€Ÿåº¦
 	extern volatile float dif_vel_R, dif_vel_L;
 	extern volatile uint16_t kpvR,kpdR,kpvL,kpdL;
 	
 	extern volatile uint16_t t_cnt_l, t_cnt_r,time, ms_time;		
-	extern volatile uint16_t minindex, maxindex;		//Å’á‘¬“xEÅ‘å‘¬“x
-	extern volatile uint16_t interval_l, interval_r;	//¶‰EƒCƒ“ƒ^[ƒoƒ‹
+	extern volatile uint16_t minindex, maxindex;		//æœ€ä½é€Ÿåº¦ãƒ»æœ€å¤§é€Ÿåº¦
+	extern volatile uint16_t interval_l, interval_r;	//å·¦å³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«
 	
 	extern volatile float duty_r,duty_l,Kvolt,duty_oR,duty_oL;
 	extern volatile float accel_r,accel_l;
 	extern volatile float test_valR[1000],test_valL[1000];
 	extern volatile uint16_t test_valR1[1000],test_valL1[1000],test_valR2[1000],test_valL2[1000]; 
 	
-	extern volatile uint16_t pulse_l, pulse_r,pulse_pre_r, pulse_pre_l;		//¶‰EƒGƒ“ƒR[ƒ_ƒpƒ‹ƒXŠÖŒW
+	extern volatile uint16_t pulse_l, pulse_r,pulse_pre_r, pulse_pre_l;		//å·¦å³ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€ãƒ‘ãƒ«ã‚¹é–¢ä¿‚
 	extern volatile int32_t dif_pulse_r, dif_pulse_l,pulse_sum_l, pulse_sum_r;
 	extern volatile float totalR_mm, totalL_mm, totalR_pre_mm, totalL_pre_mm;
 	extern int16_t	sen_dl, sen_dr;					
@@ -127,33 +127,33 @@
 #endif
 
 /*============================================================
-		ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾
+		é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 ============================================================*/
-	//====‘–sŒn====
-	//----ŠîŠ²ŠÖ”----
-	void driveA(uint16_t, unsigned char);	//‰Á‘¬‘–s
-	void driveD(uint16_t, unsigned char);	//Œ¸‘¬‘–s
-	void driveAD(uint16_t, unsigned char);	//‰ÁŒ¸‘¬‘–s
-	void driveU(uint16_t, unsigned char);	//“™‘¬‘–s(‘O‚Ì‘¬“x‚ğˆÛ)
-	void driveC(uint16_t, unsigned char);	//’è‘¬‘–s(‚ ‚ç‚©‚¶‚ßŒˆ‚Ü‚Á‚½‘¬“x)
-	void set_dir(unsigned char);		//i‚Ş•ûŒü‚Ìİ’è
+	//====èµ°è¡Œç³»====
+	//----åŸºå¹¹é–¢æ•°----
+	void driveA(uint16_t, unsigned char);	//åŠ é€Ÿèµ°è¡Œ
+	void driveD(uint16_t, unsigned char);	//æ¸›é€Ÿèµ°è¡Œ
+	void driveAD(uint16_t, unsigned char);	//åŠ æ¸›é€Ÿèµ°è¡Œ
+	void driveU(uint16_t, unsigned char);	//ç­‰é€Ÿèµ°è¡Œ(å‰ã®é€Ÿåº¦ã‚’ç¶­æŒ)
+	void driveC(uint16_t, unsigned char);	//å®šé€Ÿèµ°è¡Œ(ã‚ã‚‰ã‹ã˜ã‚æ±ºã¾ã£ãŸé€Ÿåº¦)
+	void set_dir(unsigned char);		//é€²ã‚€æ–¹å‘ã®è¨­å®š
 
 	void drive_start();
 	void drive_stop(unsigned char);
 
-	//----ŠÈˆÕãˆÊŠÖ”----
-	void half_sectionA();		//‰Á‘¬”¼‹æ‰æ
-	void half_sectionD();		//Œ¸‘¬”¼‹æ‰æ
-	void a_section();		//‰ÁŒ¸‘¬ˆê‹æ‰æ
-	void a_sectionU();		//“™‘¬ˆê‹æ‰æ
-	void s_section();		//˜A‘±‹æ‰æ’¼ü‘–s
-	void turn_R90();		//‰E90‰ñ“]
-	void turn_L90();		//¶90‰ñ“]
-	void turn_180();		//180“x‰ñ“]
-	void set_position();		//ˆÊ’u‡‚í‚¹
+	//----ç°¡æ˜“ä¸Šä½é–¢æ•°----
+	void half_sectionA();		//åŠ é€ŸåŠåŒºç”»
+	void half_sectionD();		//æ¸›é€ŸåŠåŒºç”»
+	void a_section();		//åŠ æ¸›é€Ÿä¸€åŒºç”»
+	void a_sectionU();		//ç­‰é€Ÿä¸€åŒºç”»
+	void s_section();		//é€£ç¶šåŒºç”»ç›´ç·šèµ°è¡Œ
+	void turn_R90();		//å³90å›è»¢
+	void turn_L90();		//å·¦90å›è»¢
+	void turn_180();		//180åº¦å›è»¢
+	void set_position();		//ä½ç½®åˆã‚ã›
 
-	//----‘–sŒ±----
-	void test_drive(char *mode);	//‘–sŒ±
+	//----èµ°è¡Œè©¦é¨“----
+	void test_drive(char *mode);	//èµ°è¡Œè©¦é¨“
 	
 	void start_ready();
 	

@@ -1,26 +1,26 @@
-/*
+﻿/*
 ==============================================================
  Name        : uart.c
- Copyright   : Copyright (C) ����c��w�}�C�N���}�E�X�N���u
- Description : �ʐM�p�֐������ł��D
+ Copyright   : Copyright (C) 早稲田大学マイクロマウスクラブ
+ Description : 通信用関数たちです．
 
-  �X�V����
- 2015/12/10		�R��	�R�����g�ǉ��Auart_Init��LCR������ύX
+  更新履歴
+ 2015/12/10		山上	コメント追加、uart_Init内LCR処理を変更
 ==============================================================
 */
 
-//������͔̏ԍ����͓��{��Ń��[�U�[�}�j���A��Rev.00.15�ɏ���
+//※解説の章番号等は日本語版ユーザーマニュアルRev.00.15に準拠
 
-/*�w�b�_�t�@�C���̓ǂݍ���*/
+/*ヘッダファイルの読み込み*/
 #include "global.h"
 #include <stdio.h>
-#include <stdarg.h>															// �ψ������X�g���g�p
+#include <stdarg.h>															// 可変引数リストを使用
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //uart_Init
-//	UART�̏����ݒ���s��
-// ����1�Fbaudrate�E�E�E�ʐM�̃{�[���[�g
-// �߂�l�F�Ȃ�
+//	UARTの初期設定を行う
+// 引数1：baudrate・・・通信のボーレート
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void uart_Init(){
 	R_PG_SCI_Set_C1();
@@ -30,12 +30,12 @@ void uart_Init(){
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //UART_printf
-//	UART�ŕW���o�͂��s��
-//	�Ή��w��q	�F%s,%c,%d,%u,%X,%ld,%lu,%lX
-//				�@���l�̓��[�f�B���O�[���ƕ\�������w��\
-// ����1�Fformat�E�E�E���M����{��
-// ����2�ȍ~:�E�E�E�ψ���(printf���̖{���ȍ~�̈����̂悤�Ȃ���)
-// �߂�l�F�Ȃ�
+//	UARTで標準出力を行う
+//	対応指定子	：%s,%c,%d,%u,%X,%ld,%lu,%lX
+//				　数値はリーディングゼロと表示桁数指定可能
+// 引数1：format・・・送信する本文
+// 引数2以降:・・・可変引数(printf等の本文以降の引数のようなもの)
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 
 void uart_printf(const char *format, ...) {

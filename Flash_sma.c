@@ -1,4 +1,4 @@
-// õˆÅ‚Ìƒf[ƒ^ƒV[ƒg‰ðŽß‘å‰ïõ
+ï»¿// â€ é—‡ã®ãƒ‡ãƒ¼ã‚¿ã‚·ãƒ¼ãƒˆè§£é‡ˆå¤§ä¼šâ€ 
 #include "iodefine.h"
 #include <stdint.h>
 #define E2FLASH_BASE 0x100000UL
@@ -10,46 +10,46 @@
 typedef uint8_t BYTE;
 typedef uint16_t WORD;
 
-/* ƒpƒ‰ƒ[ƒ^[•Û‘¶—pROM—ÌˆæuE2ƒf[ƒ^ƒtƒ‰ƒbƒVƒ…và–¾
- * RX220‚Å‚Í—e—Ê‚Í8kBytes‚Å‚ ‚èA“Ç‚Ý‘‚«‚É‚ÍFCLK‚Ì4ƒTƒCƒNƒ‹•ªŽžŠÔ‚ªŠ|‚©‚éB
- * Flash—p‚ÌƒvƒƒZƒbƒTFPU‚ª“Ç‚Ý‘‚«‚ð’S‚¢A‚±‚ê‚ÉƒvƒƒOƒ‰ƒ€•¶‚ð”­s‚·‚é‚±‚Æ‚Åˆ—‚ðs‚¤B
+/* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ä¿å­˜ç”¨ROMé ˜åŸŸã€ŒE2ãƒ‡ãƒ¼ã‚¿ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ã€èª¬æ˜Ž
+ * RX220ã§ã¯å®¹é‡ã¯8kBytesã§ã‚ã‚Šã€èª­ã¿æ›¸ãã«ã¯FCLKã®4ã‚µã‚¤ã‚¯ãƒ«åˆ†æ™‚é–“ãŒæŽ›ã‹ã‚‹ã€‚
+ * Flashç”¨ã®ãƒ—ãƒ­ã‚»ãƒƒã‚µFPUãŒèª­ã¿æ›¸ãã‚’æ‹…ã„ã€ã“ã‚Œã«ãƒ—ãƒ­ã‚°ãƒ©ãƒ æ–‡ã‚’ç™ºè¡Œã™ã‚‹ã“ã¨ã§å‡¦ç†ã‚’è¡Œã†ã€‚
  *
- * ƒf[ƒ^—Ìˆæ‚Í128ƒoƒCƒg‚²‚Æ‚É64ŒÂ‚ÌƒuƒƒbƒN(DB00?DB63)‚É•ª‚©‚ê‚Ä‚¢‚éB
- * Á‹Ž‚ÍƒuƒƒbƒN’PˆÊ‚ÅA‘‚«ž‚Ý‚Í2ƒoƒCƒgor8ƒoƒCƒg’PˆÊ‚Ås‚¤B
+ * ãƒ‡ãƒ¼ã‚¿é ˜åŸŸã¯128ãƒã‚¤ãƒˆã”ã¨ã«64å€‹ã®ãƒ–ãƒ­ãƒƒã‚¯(DB00?DB63)ã«åˆ†ã‹ã‚Œã¦ã„ã‚‹ã€‚
+ * æ¶ˆåŽ»ã¯ãƒ–ãƒ­ãƒƒã‚¯å˜ä½ã§ã€æ›¸ãè¾¼ã¿ã¯2ãƒã‚¤ãƒˆor8ãƒã‚¤ãƒˆå˜ä½ã§è¡Œã†ã€‚
  */
 
-// NOTE: ‚±‚ÌƒvƒƒOƒ‰ƒ€ŒQ‚Å‚ÍAˆø”“à‚É‹LÚ‚·‚éƒAƒhƒŒƒX‚Í0x0000‚©‚çŽn‚Ü‚é‘Š‘ÎƒAƒhƒŒƒX‚Æ‚·‚éB
+// NOTE: ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ç¾¤ã§ã¯ã€å¼•æ•°å†…ã«è¨˜è¼‰ã™ã‚‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã¯0x0000ã‹ã‚‰å§‹ã¾ã‚‹ç›¸å¯¾ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã™ã‚‹ã€‚
 
-// E2ƒtƒ‰ƒbƒVƒ…—Ìˆæ‚ÉW‚ð‹–‰Â‚·‚é
+// E2ãƒ•ãƒ©ãƒƒã‚·ãƒ¥é ˜åŸŸã«Wã‚’è¨±å¯ã™ã‚‹
 static void e2_write_enable(void) {
-	FLASH.DFLWE0.WORD = 0x1E00 | 0x0F; // ‘SƒuƒƒbƒN‚ÉƒvƒƒOƒ‰ƒ€/ƒCƒŒ[ƒX‹–‰Â
+	FLASH.DFLWE0.WORD = 0x1E00 | 0x0F; // å…¨ãƒ–ãƒ­ãƒƒã‚¯ã«ãƒ—ãƒ­ã‚°ãƒ©ãƒ /ã‚¤ãƒ¬ãƒ¼ã‚¹è¨±å¯
 }
 
 static void e2_read_enable(void) {
-	FLASH.DFLRE0.WORD = 0x2D00 | 0x0F; // ‘SƒuƒƒbƒN‚É“Ç‚Ýo‚µ‹–‰Â
+	FLASH.DFLRE0.WORD = 0x2D00 | 0x0F; // å…¨ãƒ–ãƒ­ãƒƒã‚¯ã«èª­ã¿å‡ºã—è¨±å¯
 }
 
-// E2ƒtƒ‰ƒbƒVƒ…—Ìˆæ‚ÉW‚ð‹ÖŽ~‚·‚é
+// E2ãƒ•ãƒ©ãƒƒã‚·ãƒ¥é ˜åŸŸã«Wã‚’ç¦æ­¢ã™ã‚‹
 static void e2_write_disable(void) {
-	FLASH.DFLWE0.WORD = 0x1E00 | 0x00; // ‘SƒuƒƒbƒNƒvƒƒOƒ‰ƒ€/ƒCƒŒ[ƒX‹ÖŽ~
+	FLASH.DFLWE0.WORD = 0x1E00 | 0x00; // å…¨ãƒ–ãƒ­ãƒƒã‚¯ãƒ—ãƒ­ã‚°ãƒ©ãƒ /ã‚¤ãƒ¬ãƒ¼ã‚¹ç¦æ­¢
 }
 
 static void e2_read_disable(void) {
-	FLASH.DFLRE0.WORD = 0x2D00 | 0x00; // ‘SƒuƒƒbƒN“Ç‚Ýo‚µ‹ÖŽ~
+	FLASH.DFLRE0.WORD = 0x2D00 | 0x00; // å…¨ãƒ–ãƒ­ãƒƒã‚¯èª­ã¿å‡ºã—ç¦æ­¢
 }
 
-// E2ƒf[ƒ^ƒtƒ‰ƒbƒVƒ…ƒ‚[ƒh‚Ö
+// E2ãƒ‡ãƒ¼ã‚¿ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ãƒ¢ãƒ¼ãƒ‰ã¸
 static void enter_pe_mode(void) {
-	FLASH.FENTRYR.WORD = 0xAA80; // E2ƒtƒ‰ƒbƒVƒ…‚ÌP/Eƒ‚[ƒh‚É“ü‚é
-	FLASH.FWEPROR.BIT.FLWE = 1; // ƒvƒƒOƒ‰ƒ€/ƒCƒŒ[ƒX‰Â”\
+	FLASH.FENTRYR.WORD = 0xAA80; // E2ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ã®P/Eãƒ¢ãƒ¼ãƒ‰ã«å…¥ã‚‹
+	FLASH.FWEPROR.BIT.FLWE = 1; // ãƒ—ãƒ­ã‚°ãƒ©ãƒ /ã‚¤ãƒ¬ãƒ¼ã‚¹å¯èƒ½
 }
 
-// E2ƒf[ƒ^ƒtƒ‰ƒbƒVƒ…ƒŠ[ƒhƒ‚[ƒh‚Ö(E2ƒf[ƒ^ƒtƒ‰ƒbƒVƒ…‚à[‚Ç‚ð”²‚¯‚é)
-static void exit_pe_mode(void) { // P/Eƒ‚[ƒh‚©‚ç”²‚¯‚é
-	while( !FLASH.FSTATR0.BIT.FRDY ); // ŽÀs‚³‚ê‚Ä‚¢‚éˆ—‚ªI—¹‚·‚é‚Ü‚Å‘Ò‚Â
-	FLASH.FENTRYR.WORD = 0xAA00; // ƒŠ[ƒhƒ‚[ƒh‚É
-	while( FLASH.FENTRYR.WORD != 0x00 ); // ƒŠ[ƒhƒ‚[ƒh‚É“ü‚é‚Ü‚Å‘Ò‚Â
-	FLASH.FWEPROR.BIT.FLWE = 2; // ƒvƒƒOƒ‰ƒ€/ƒCƒŒ[ƒX•s‰Â”\‚É
+// E2ãƒ‡ãƒ¼ã‚¿ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ãƒªãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã¸(E2ãƒ‡ãƒ¼ã‚¿ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ã‚‚ãƒ¼ã©ã‚’æŠœã‘ã‚‹)
+static void exit_pe_mode(void) { // P/Eãƒ¢ãƒ¼ãƒ‰ã‹ã‚‰æŠœã‘ã‚‹
+	while( !FLASH.FSTATR0.BIT.FRDY ); // å®Ÿè¡Œã•ã‚Œã¦ã„ã‚‹å‡¦ç†ãŒçµ‚äº†ã™ã‚‹ã¾ã§å¾…ã¤
+	FLASH.FENTRYR.WORD = 0xAA00; // ãƒªãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã«
+	while( FLASH.FENTRYR.WORD != 0x00 ); // ãƒªãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã«å…¥ã‚‹ã¾ã§å¾…ã¤
+	FLASH.FWEPROR.BIT.FLWE = 2; // ãƒ—ãƒ­ã‚°ãƒ©ãƒ /ã‚¤ãƒ¬ãƒ¼ã‚¹ä¸å¯èƒ½ã«
 }
 
 static void e2_notify_peri(uint16_t *addr) {
@@ -61,7 +61,7 @@ static void e2_notify_peri(uint16_t *addr) {
 	flash_access(addr, WORD) = 0x0F0F;
 	flash_access(addr, BYTE) = 0xD0;
 
-	while( !FLASH.FSTATR0.BIT.FRDY ); // ˆ—Š®—¹‚Ü‚Å‘Ò‚Â ƒ†[ƒU[ƒ}ƒjƒ…ƒAƒ‹•ª‚©‚è‚Ã‚ç‚¢‚æIII
+	while( !FLASH.FSTATR0.BIT.FRDY ); // å‡¦ç†å®Œäº†ã¾ã§å¾…ã¤ ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒžãƒ‹ãƒ¥ã‚¢ãƒ«åˆ†ã‹ã‚Šã¥ã‚‰ã„ã‚ˆï¼ï¼ï¼
 }
 
 uint8_t e2_is_blank(uint16_t *addr) {
@@ -69,12 +69,12 @@ uint8_t e2_is_blank(uint16_t *addr) {
 	e2_write_enable();
 	e2_read_enable();
 	enter_pe_mode();
-	FLASH.FMODR.BIT.FRDMD = 1; // ƒuƒ‰ƒ“ƒNƒ`ƒFƒbƒN‚ð‚·‚éƒ‚[ƒh‚É“ü‚é
-	FLASH.DFLBCCNT.BIT.BCSIZE = 0; // 2ƒoƒCƒg“Ç‚Ýo‚µ
-	FLASH.DFLBCCNT.BIT.BCADR = abs_addr(addr); // ƒ`ƒFƒbƒNæ‚ÌƒAƒhƒŒƒXŠi”[
-	flash_access(addr, BYTE) = 0x71; // ‚±‚Ì2‚Â‚ÌƒRƒ}ƒ“ƒh‚ð“ü—Í‚µ‚ÄFPU‚ð“®ì‚³‚¹‚é
+	FLASH.FMODR.BIT.FRDMD = 1; // ãƒ–ãƒ©ãƒ³ã‚¯ãƒã‚§ãƒƒã‚¯ã‚’ã™ã‚‹ãƒ¢ãƒ¼ãƒ‰ã«å…¥ã‚‹
+	FLASH.DFLBCCNT.BIT.BCSIZE = 0; // 2ãƒã‚¤ãƒˆèª­ã¿å‡ºã—
+	FLASH.DFLBCCNT.BIT.BCADR = abs_addr(addr); // ãƒã‚§ãƒƒã‚¯å…ˆã®ã‚¢ãƒ‰ãƒ¬ã‚¹æ ¼ç´
+	flash_access(addr, BYTE) = 0x71; // ã“ã®2ã¤ã®ã‚³ãƒžãƒ³ãƒ‰ã‚’å…¥åŠ›ã—ã¦FPUã‚’å‹•ä½œã•ã›ã‚‹
 	flash_access(addr, BYTE) = 0xD0;
-	while( !FLASH.FSTATR0.BIT.FRDY ); // ˆ—Š®—¹‚Ü‚Å‘Ò‚Â
+	while( !FLASH.FSTATR0.BIT.FRDY ); // å‡¦ç†å®Œäº†ã¾ã§å¾…ã¤
 	ret = !FLASH.DFLBCSTAT.BIT.BCST;
 	exit_pe_mode();
 	e2_write_disable();
@@ -88,11 +88,11 @@ uint8_t e2_erase(uint16_t *addr) {
 	enter_pe_mode();
 	e2_notify_peri((uint16_t *)((uintptr_t) addr & (E2FLASH_BASE | E2BLOCK_SIZE)));
 
-	FLASH.DFLWE0.WORD = 0x1E0F; // Á‹Ž‹–‰Â
+	FLASH.DFLWE0.WORD = 0x1E0F; // æ¶ˆåŽ»è¨±å¯
 
 	flash_access(addr, BYTE) = 0x20;
 	flash_access(addr, BYTE) = 0xD0;
-	while( !FLASH.FSTATR0.BIT.FRDY ); // ˆ—Š®—¹‚Ü‚Å‘Ò‚Â
+	while( !FLASH.FSTATR0.BIT.FRDY ); // å‡¦ç†å®Œäº†ã¾ã§å¾…ã¤
 	ret = !(FLASH.FSTATR0.BIT.ILGLERR | FLASH.FSTATR0.BIT.ERSERR);
 	exit_pe_mode();
 	e2_write_disable();
@@ -112,11 +112,11 @@ uint8_t e2_write(uint16_t dat, uint16_t *addr) {
 	flash_access(addr, WORD) = dat;
 	flash_access(addr, BYTE) = 0xD0;
 
-	while( !FLASH.FSTATR0.BIT.FRDY ); // ˆ—Š®—¹‚Ü‚Å‘Ò‚Â
+	while( !FLASH.FSTATR0.BIT.FRDY ); // å‡¦ç†å®Œäº†ã¾ã§å¾…ã¤
 	ret = !(FLASH.FSTATR0.BIT.ILGLERR | FLASH.FSTATR0.BIT.PRGERR);
 
 
-	FLASH.DFLWE0.WORD = 0x1E00; // Á‹Ž‹–‰Â‚ð–ß‚·
+	FLASH.DFLWE0.WORD = 0x1E00; // æ¶ˆåŽ»è¨±å¯ã‚’æˆ»ã™
 	exit_pe_mode();
 	e2_write_disable();
 	return ret;
@@ -131,7 +131,7 @@ uint16_t e2_read(uint16_t *addr) {
 	return ret;
 }
 
-void e2_clear_status(uint16_t *addr) { // ƒCƒŠ[ƒKƒ‹ƒrƒbƒg‚ª—§‚Á‚½Žž‚É‚±‚ê‚ðƒNƒŠƒA‚·‚é
+void e2_clear_status(uint16_t *addr) { // ã‚¤ãƒªãƒ¼ã‚¬ãƒ«ãƒ“ãƒƒãƒˆãŒç«‹ã£ãŸæ™‚ã«ã“ã‚Œã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 	enter_pe_mode();
 	e2_notify_peri(addr);
 	if( FLASH.FSTATR0.BIT.ILGLERR ) {

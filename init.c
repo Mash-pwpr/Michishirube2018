@@ -1,23 +1,23 @@
-/*
+ï»¿/*
 ==============================================================
  Name        : init.c
- Copyright   : Copyright (C) ‘ˆî“c‘åŠwƒ}ƒCƒNƒƒ}ƒEƒXƒNƒ‰ƒu
- Description : ‰Šú‰»ŠÖ”‚½‚¿‚Å‚·D
+ Copyright   : Copyright (C) æ—©ç¨²ç”°å¤§å­¦ãƒžã‚¤ã‚¯ãƒ­ãƒžã‚¦ã‚¹ã‚¯ãƒ©ãƒ–
+ Description : åˆæœŸåŒ–é–¢æ•°ãŸã¡ã§ã™ï¼Ž
 
- XV—š—ð
- 2015/12/4		ŽRã	ˆê•”ƒRƒƒ“ƒg’Ç‰ÁA•\Ž¦—pLED‚ÌÝ’è‚ð’Ç‰Á
- 2016/2/6		[ŽR	ˆê•”ƒRƒƒ“ƒg’Ç‰Á
- 2016/2/8		ŽRã	port_InitŠÖ”“à‚ÉPIN_SET(MDR_M3, 0);‚ð’Ç‰Á
- 2016/2/12		ŽRã	sensor_InitŠÖ”“à‚É”­Œõ•”‚ÌIOCONÝ’è‚ð’Ç‰Á
- 2016/2/24		ŽRã	2016”N“x—p‚Éƒsƒ“Ý’è‚ð•ÏX
+ æ›´æ–°å±¥æ­´
+ 2015/12/4		å±±ä¸Š	ä¸€éƒ¨ã‚³ãƒ¡ãƒ³ãƒˆè¿½åŠ ã€è¡¨ç¤ºç”¨LEDã®è¨­å®šã‚’è¿½åŠ 
+ 2016/2/6		æ·±å±±	ä¸€éƒ¨ã‚³ãƒ¡ãƒ³ãƒˆè¿½åŠ 
+ 2016/2/8		å±±ä¸Š	port_Inité–¢æ•°å†…ã«PIN_SET(MDR_M3, 0);ã‚’è¿½åŠ 
+ 2016/2/12		å±±ä¸Š	sensor_Inité–¢æ•°å†…ã«ç™ºå…‰éƒ¨ã®IOCONè¨­å®šã‚’è¿½åŠ 
+ 2016/2/24		å±±ä¸Š	2016å¹´åº¦ç”¨ã«ãƒ”ãƒ³è¨­å®šã‚’å¤‰æ›´
 ==============================================================
  */
 
 #include "global.h"
 /*============================================================
-		‰Šú‰»ŠÖ”
+		åˆæœŸåŒ–é–¢æ•°
 ============================================================*/
-// ŠeŽí“üo—Í‚ÌÝ’è
+// å„ç¨®å…¥å‡ºåŠ›ã®è¨­å®š
 void port_Init(void){
 	PORTB.PMR.BIT.B6 = 0;
 	PORTB.PMR.BIT.B7 = 0;
@@ -31,9 +31,9 @@ void port_Init(void){
 	PORT.PSRA.BIT.PSEL6 = 0;
 	PORT.PSRA.BIT.PSEL7 = 0;
 	
-	//I/OŠÖŒW‚Ìƒ|[ƒgÝ’è
-	R_PG_IO_PORT_Set_P5();		//ƒ‚ƒ^ƒhƒ‰‚Ö‚ÌŽwŽ¦
-	R_PG_IO_PORT_Set_PA();		//ƒ‚ƒ^ƒhƒ‰‚Ö‚ÌŽwŽ¦
+	//I/Oé–¢ä¿‚ã®ãƒãƒ¼ãƒˆè¨­å®š
+	R_PG_IO_PORT_Set_P5();		//ãƒ¢ã‚¿ãƒ‰ãƒ©ã¸ã®æŒ‡ç¤º
+	R_PG_IO_PORT_Set_PA();		//ãƒ¢ã‚¿ãƒ‰ãƒ©ã¸ã®æŒ‡ç¤º
 	R_PG_IO_PORT_Set_PC();		//
 
 	PORTB.PDR.BIT.B6 = 1;
@@ -41,25 +41,25 @@ void port_Init(void){
 	PORTB.PODR.BIT.B6 = 1;
 	PORTB.PODR.BIT.B7 = 1;
 				
-	PIN_L(MDR_REF);				//ƒŠƒtƒ@ƒŒƒ“ƒX‚ðØ‚é@ƒsƒ“2_1‚Ìo—Í‚ðLow‚ÉÝ’è
+	PIN_L(MDR_REF);				//ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹ã‚’åˆ‡ã‚‹ã€€ãƒ”ãƒ³2_1ã®å‡ºåŠ›ã‚’Lowã«è¨­å®š
 
-	set_dir(FORWARD);			//is•ûŒü‚ð‘O‚Ö
+	set_dir(FORWARD);			//é€²è¡Œæ–¹å‘ã‚’å‰ã¸
 
 }
 
 
-// ƒZƒ“ƒT[Ý’è
+// ã‚»ãƒ³ã‚µãƒ¼è¨­å®š
 void sensor_Init(void){
-	//ƒZƒ“ƒTŽóŒõ•”‚Ìƒ|[ƒgÝ’è ¶‚©‚ç‡‚É
+	//ã‚»ãƒ³ã‚µå—å…‰éƒ¨ã®ãƒãƒ¼ãƒˆè¨­å®š å·¦ã‹ã‚‰é †ã«
 	R_PG_ADC_12_Set_S12AD0();
-	//ƒZƒ“ƒT”­Œõ•”‰ŠúÝ’è
+	//ã‚»ãƒ³ã‚µç™ºå…‰éƒ¨åˆæœŸè¨­å®š
 	R_PG_IO_PORT_Set_PE();
 }
 
 
-// ƒZƒ“ƒTŒnC‘–sŒnC’TõŒn@‚Ì•Ï”‰Šú‰»
+// ã‚»ãƒ³ã‚µç³»ï¼Œèµ°è¡Œç³»ï¼ŒæŽ¢ç´¢ç³»ã€€ã®å¤‰æ•°åˆæœŸåŒ–
 void val_Init(void){
-	//----ƒZƒ“ƒTŒn----
+	//----ã‚»ãƒ³ã‚µç³»----
 	tp = 0;
 	ad_l = ad_r = ad_fr = ad_fl = 0;
 	base_l = base_r = 0;
@@ -73,32 +73,32 @@ void val_Init(void){
 	accel_r = 0.5;
 	accel_l = 0.5;
 	
-	//----‘–sŒn----
-	maxindex = MAXSPEED_S;			//Å‚‘¬“x‰Šú‰»     MAXSPEED_S‚Íglobal.h‚Éƒ}ƒNƒ’è‹`‚ ‚è
-	minindex = MINSPEED_S;			//Å’á‘¬“x‰Šú‰»     MINSPEED_S‚Íglobal.h‚Éƒ}ƒNƒ’è‹`‚ ‚è
-	MF.FLAGS = 0x80;			//ƒtƒ‰ƒOƒNƒŠƒA•’âŽ~ó‘Ô  0x80=0b10000000
+	//----èµ°è¡Œç³»----
+	maxindex = MAXSPEED_S;			//æœ€é«˜é€Ÿåº¦åˆæœŸåŒ–     MAXSPEED_Sã¯global.hã«ãƒžã‚¯ãƒ­å®šç¾©ã‚ã‚Š
+	minindex = MINSPEED_S;			//æœ€ä½Žé€Ÿåº¦åˆæœŸåŒ–     MINSPEED_Sã¯global.hã«ãƒžã‚¯ãƒ­å®šç¾©ã‚ã‚Š
+	MF.FLAGS = 0x80;			//ãƒ•ãƒ©ã‚°ã‚¯ãƒªã‚¢ï¼†åœæ­¢çŠ¶æ…‹  0x80=0b10000000
 
-	//----’TõŒn----
-	goal_x = GOAL_X;        		//GOAL_X‚Íglobal.h‚Éƒ}ƒNƒ’è‹`‚ ‚è
-	goal_y = GOAL_Y;        		//GOAL_Y‚Íglobal.h‚Éƒ}ƒNƒ’è‹`‚ ‚è
-	map_Init();						//ƒ}ƒbƒv‚Ì‰Šú‰»
-	PRELOC.PLANE = 0x00;			//Œ»Ý’n‚Ì‰Šú‰»
-	m_dir = 0;				//ƒ}ƒEƒX•ûŒü‚Ì‰Šú‰»
+	//----æŽ¢ç´¢ç³»----
+	goal_x = GOAL_X;        		//GOAL_Xã¯global.hã«ãƒžã‚¯ãƒ­å®šç¾©ã‚ã‚Š
+	goal_y = GOAL_Y;        		//GOAL_Yã¯global.hã«ãƒžã‚¯ãƒ­å®šç¾©ã‚ã‚Š
+	map_Init();						//ãƒžãƒƒãƒ—ã®åˆæœŸåŒ–
+	PRELOC.PLANE = 0x00;			//ç¾åœ¨åœ°ã®åˆæœŸåŒ–
+	m_dir = 0;				//ãƒžã‚¦ã‚¹æ–¹å‘ã®åˆæœŸåŒ–
 
 	Kvolt = MASS / 2 * DIA_SQUR_mm / DIA_PINI_mm * DIA_WHEEL_mm / Ktolk * Rmotor;
 	
 }
 
-// ƒ^ƒCƒ}‰Šú‰»
+// ã‚¿ã‚¤ãƒžåˆæœŸåŒ–
 void timer_Init(void){
 
 	R_PG_Timer_Set_CMT_U0_C0();
 	R_PG_Timer_Set_CMT_U0_C1();
 
-	R_PG_Timer_Set_MTU_U0_C0();		//ƒuƒU[—p‰ŠúÝ’è
-	R_PG_Timer_Set_MTU_U0_C1();		//‰EƒGƒ“ƒR[ƒ_
-	R_PG_Timer_Set_MTU_U0_C2();		//¶ƒGƒ“ƒR[ƒ_
-	R_PG_Timer_Set_MTU_U0_C3();		//¶ƒ‚[ƒ^
-	R_PG_Timer_Set_MTU_U0_C4();		//‰Eƒ‚[ƒ^
+	R_PG_Timer_Set_MTU_U0_C0();		//ãƒ–ã‚¶ãƒ¼ç”¨åˆæœŸè¨­å®š
+	R_PG_Timer_Set_MTU_U0_C1();		//å³ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€
+	R_PG_Timer_Set_MTU_U0_C2();		//å·¦ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€
+	R_PG_Timer_Set_MTU_U0_C3();		//å·¦ãƒ¢ãƒ¼ã‚¿
+	R_PG_Timer_Set_MTU_U0_C4();		//å³ãƒ¢ãƒ¼ã‚¿
 
 }

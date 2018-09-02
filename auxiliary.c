@@ -1,90 +1,90 @@
-/*
+﻿/*
 ==============================================================
  Name        : auxiliary.c
- Copyright   : Copyright (C) ����c��w�}�C�N���}�E�X�N���u
- Description : �⏕�֐������ł��D�J���܂��傤�D
+ Copyright   : Copyright (C) 早稲田大学マイクロマウスクラブ
+ Description : 補助関数たちです．労わりましょう．
 
- �X�V����
- 2015/12/4		�R��	�ꕔ�R�����g�ǉ��Amode_select��LED�\��������mode�̏�����ύX
- 2015/1/30		�R��	�ꕔ�R�����g�ǉ��A�\���pLED�̐ݒ��ǉ�
+ 更新履歴
+ 2015/12/4		山上	一部コメント追加、mode_selectのLED表示部分とmodeの処理を変更
+ 2015/1/30		山上	一部コメント追加、表示用LEDの設定を追加
 ==============================================================
 */
 
-/*�w�b�_�t�@�C���̓ǂݍ���*/
+/*ヘッダファイルの読み込み*/
 #include "global.h"
 
-//������͔̏ԍ����͓��{��Ń��[�U�[�}�j���A��Rev.00.15�ɏ���
+//※解説の章番号等は日本語版ユーザーマニュアルRev.00.15に準拠
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //wait
-//	ms_wait�͏d�����Ďg�p����(�ȉ��Q��)���Ƃ��o���Ȃ�
-//	(���삪�r���Ŏ~�܂�)�B���̂��߁A���荞�݊֐����ł�
-//	���m�Ȏ��Ԃ͑���ł��Ȃ���while�����[�v��p���đҋ@����
-// ����1�Floop�E�E�E�ҋ@���郋�[�v��
-// �߂�l�F����
+//	ms_waitは重複して使用する(以下参照)ことが出来ない
+//	(動作が途中で止まる)。そのため、割り込み関数内では
+//	正確な時間は測定できないがwhile文ループを用いて待機する
+// 引数1：loop・・・待機するループ数
+// 戻り値：無し
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void stay(unsigned int loop){
-	while(loop--);					//loop��while������
+	while(loop--);					//loop回while文を回す
 }
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //ms_wait
-//	�~���b�ҋ@����
-// ����1�Fms�E�E�E�ҋ@����[�~���b]
-// �߂�l�F����
+//	ミリ秒待機する
+// 引数1：ms・・・待機時間[ミリ秒]
+// 戻り値：無し
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void ms_wait(unsigned int ms){
 
 	//uint16_t timercnt, i;
-	// PDG�œ���N���b�N���A�V�X�e���N���b�N20MHz��32�Ŋ����ĕ������Ă���
-	R_PG_Timer_StartCount_CMT_U0_C0(); // �J�E���g�X�^�[�g
+	// PDGで動作クロックを、システムクロック20MHzを32で割って分周してある
+	R_PG_Timer_StartCount_CMT_U0_C0(); // カウントスタート
 
 	/*for(i=0; i<ms; i++){
-		R_PG_Timer_SetCounterValue_CMT_U0_C0(0); // �J�E���g�l���[���ɖ߂�
+		R_PG_Timer_SetCounterValue_CMT_U0_C0(0); // カウント値をゼロに戻す
 		do{
-			R_PG_Timer_GetCounterValue_CMT_U0_C0(&timercnt); // �J�E���g�l���擾
-		} while(timercnt < 624 ); // 624�J�E���g�ڂ�1ms�o�������ƂɂȂ�
+			R_PG_Timer_GetCounterValue_CMT_U0_C0(&timercnt); // カウント値を取得
+		} while(timercnt < 624 ); // 624カウント目で1ms経ったことになる
 	}
 */	
 	ms_time = 0;
 	while(ms_time < ms){
 	}
 	
-	R_PG_Timer_HaltCount_CMT_U0_C0(); // �J�E���g�I��
+	R_PG_Timer_HaltCount_CMT_U0_C0(); // カウント終了
 
 }
 
-// --��ms_wait���{���Ɗ��荞�݊֐��ŏd�������ꍇ�̗���--
-//	�{��							���荞�݊֐�
-//	ms_wait�֐����g�p
-//	��
-//	SysTick�^�C�}�𓮍�J�n
-//	��
-//	�J�E���^����萔���܂�܂őҋ@
-//	��
-//	(�ҋ@�����荞�ݔ���)		��	ms_wait�֐����g�p
-//								��
-//								(SysTick�^�C�}�𓮍�J�n)
-//								��
-//								�J�E���^����萔���܂�܂őҋ@
-//								��
-//								�ҋ@�I��
-//								��
-//								�J�E���^���~�߂�
-//								��
-//	�J�E���^����萔���܂�܂őҋ@	��	(���荞�ݏI��)
-//	��
-//	(SysTick�^�C�}�����삵�Ă��Ȃ�����
-//	�J�E���^�����܂炸�ȍ~�ҋ@�̂܂ܓ��삹��)
+// --※ms_waitが本文と割り込み関数で重複した場合の流れ--
+//	本文							割り込み関数
+//	ms_wait関数を使用
+//	↓
+//	SysTickタイマを動作開始
+//	↓
+//	カウンタが一定数たまるまで待機
+//	↓
+//	(待機中割り込み発生)		→	ms_wait関数を使用
+//								↓
+//								(SysTickタイマを動作開始)
+//								↓
+//								カウンタが一定数たまるまで待機
+//								↓
+//								待機終了
+//								↓
+//								カウンタを止める
+//								↓
+//	カウンタが一定数たまるまで待機	←	(割り込み終了)
+//	↓
+//	(SysTickタイマが動作していないため
+//	カウンタがたまらず以降待機のまま動作せず)
 
 
 /*------------------------------------------------------------
-		���[�h�Z���N�g
+		モードセレクト
 ------------------------------------------------------------*/
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //select_mode
-//	���[�h�Z���N�g���s��
-// ����1�Fmode�E�E�E���[�h�ԍ����i�[����ϐ��̃A�h���X
-// �߂�l�F����
+//	モードセレクトを行う
+// 引数1：mode・・・モード番号を格納する変数のアドレス
+// 戻り値：無し
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void select_mode(char *mode){
 	uint16_t encR,encL;
@@ -92,17 +92,17 @@ void select_mode(char *mode){
 	uint16_t nowL = 0;
 	uint16_t preR,preL;
 	
-	*mode = 0x00;									//�ϐ��̏�����
+	*mode = 0x00;									//変数の初期化
 	R_PG_Timer_SetCounterValue_MTU_U0_C1(0);
 	R_PG_Timer_SetCounterValue_MTU_U0_C2(0);
 	
-	//====�ϐ�������====
-	uart_printf(" mode: 0\r");						//���[�h��UART�ő��M
+	//====変数初期化====
+	uart_printf(" mode: 0\r");						//モードをUARTで送信
 	
 	R_PG_Timer_StartCount_MTU_U0_C1();
 	R_PG_Timer_StartCount_MTU_U0_C2();
 
-	//====���[�h�I������====
+	//====モード選択処理====
 	do{	
 		preR = nowR;
 		preL = nowL;
@@ -115,8 +115,8 @@ void select_mode(char *mode){
 		
 		//ms_wait(50);
 		 *mode = nowR;
-		//LED�Ō��݂̒l��\��
-		pins_write(DISP_LEDS, *mode, 4);			//LED��ActiveLow�̏ꍇ
+		//LEDで現在の値を表示
+		pins_write(DISP_LEDS, *mode, 4);			//LEDがActiveLowの場合
 		if(nowR - preR != 0){
 			uart_printf(" mode:%2d\r\n", *mode);
 			melody(880,100);

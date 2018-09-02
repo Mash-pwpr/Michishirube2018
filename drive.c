@@ -1,302 +1,302 @@
-/*
+﻿/*
 ==============================================================
  Name        : drive.c
- Copyright   : Copyright (C) ����c��w�}�C�N���}�E�X�N���u
- Description : ���s�֘A�̊֐������ł��D
+ Copyright   : Copyright (C) 早稲田大学マイクロマウスクラブ
+ Description : 走行関連の関数たちです．
 
-  �X�V����
- 2016/1/29		�R��	�R�����g�ǉ��Atest_drive��ms_wait��WAIT�𓝍�
- 2016/2/15		�R��	�p���X�֌W�̃}�N���𐮗�
+  更新履歴
+ 2016/1/29		山上	コメント追加、test_drive内ms_waitとWAITを統合
+ 2016/2/15		山上	パルス関係のマクロを整理
 ==============================================================
 */
 #include "global.h"
 
-//������͔̏ԍ����͓��{��Ń��[�U�[�}�j���A��Rev.00.15�ɏ���
+//※解説の章番号等は日本語版ユーザーマニュアルRev.00.15に準拠
 
 /*==========================================================
-		���s�n�֐�
+		走行系関数
 ==========================================================*/
 /*
-		��{�d�l�Ƃ��āA
-		��֐�		������:���s�p���X��
-						������:��~���t���O
+		基本仕様として、
+		基幹関数		第一引数:走行パルス数
+						第二引数:停止許可フラグ
 
-		�}�E�X�t���O(MF)
-			7Bit:�X�g�b�v�t���O
-			6Bit:�葬�t���O
-			5Bit:�����t���O
-			4Bit:�����t���O
-			3Bit:����t���O
-			2Bit:�X�����[���t���O
-			1Bit:�񎟑��s�t���O
-			0Bit:�\��r�b�g
-		���4Bit�́A��ʂقǗD��x������
+		マウスフラグ(MF)
+			7Bit:ストップフラグ
+			6Bit:定速フラグ
+			5Bit:減速フラグ
+			4Bit:加速フラグ
+			3Bit:制御フラグ
+			2Bit:スラロームフラグ
+			1Bit:二次走行フラグ
+			0Bit:予約ビット
+		上位4Bitは、上位ほど優先度が高い
 */
 /*----------------------------------------------------------
-		��ʊ֐�
+		上位関数
 ----------------------------------------------------------*/
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //half_sectionA
-//	����敪�������Ȃ��瑖�s����
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	半区画分加速しながら走行する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void half_sectionA()
 {
-	MF.FLAG.CTRL = 1;										//�����L���ɂ���
-	driveA(DR_SEC_HALF, 0);									//�����̃p���X���������Ȃ��瑖�s�B���s��͒�~���Ȃ�
-	get_wall_info();										//�Ǐ����擾
+	MF.FLAG.CTRL = 1;										//制御を有効にする
+	driveA(DR_SEC_HALF, 0);									//半区画のパルス分加速しながら走行。走行後は停止しない
+	get_wall_info();										//壁情報を取得
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //half_sectionD
-//	����敪�������Ȃ��瑖�s����~����
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	半区画分減速しながら走行し停止する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void half_sectionD()
 {
 	MF.FLAG.CTRL = 1;										
-	driveD(DR_SEC_HALF, 1);									//�����̃p���X���������Ȃ��瑖�s�B���s��͒�~����
+	driveD(DR_SEC_HALF, 1);									//半区画のパルス分減速しながら走行。走行後は停止する
 	Wait;													
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //a_section
-//	1��敪�i��Œ�~����
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	1区画分進んで停止する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void a_section()
 {
-	half_sectionA();			//����敪�������s
+	half_sectionA();			//半区画分加速走行
 	half_sectionD();										
 }
 
 void s_section(){
-	half_sectionA();			//����敪�������s
+	half_sectionA();			//半区画分加速走行
 	half_sectionA();										
 	
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //a_sectionU
-//	������1��敪�i��
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	等速で1区画分進む
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void a_sectionU() {
 	MF.FLAG.CTRL = 1;
-	driveU(DR_SEC_HALF*2, 0);		//1���̃p���X���������s�B���s��͒�~���Ȃ�
-	get_wall_info();			//�Ǐ����擾
+	driveU(DR_SEC_HALF*2, 0);		//1区画のパルス分等速走行。走行後は停止しない
+	get_wall_info();			//壁情報を取得
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //turn_R90
-//	�E��90�x��]����
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	右に90度回転する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void turn_R90(){
-	MF.FLAG.CTRL = 0;										//����𖳌��ɂ���
-	set_dir(TURN_R);										//�E�ɉ�]����悤���[�^�̉�]������ݒ�
- 	driveC(DR_ROT_R90, 1);									//�ᑬ�Ŏw��p���X����]�B��]��ɒ�~����
-	Wait;													//���S�ɒ�~����܂őҋ@
-	set_dir(FORWARD);										//�O�i����悤�Ƀ��[�^�̉�]������ݒ�
+	MF.FLAG.CTRL = 0;										//制御を無効にする
+	set_dir(TURN_R);										//右に回転するようモータの回転方向を設定
+ 	driveC(DR_ROT_R90, 1);									//低速で指定パルス分回転。回転後に停止する
+	Wait;													//完全に停止するまで待機
+	set_dir(FORWARD);										//前進するようにモータの回転方向を設定
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //turn_L90
-//	����90�x��]����
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	左に90度回転する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void turn_L90()
 {
-	MF.FLAG.CTRL = 0;										//����𖳌��ɂ���
-	set_dir(TURN_L);										//���ɉ�]����悤���[�^�̉�]������ݒ�
-	driveC(DR_ROT_L90, 1);									//�葬�Ŏw��p���X����]�B��]��ɒ�~����
-	Wait;													//���S�ɒ�~����܂őҋ@
-	set_dir(FORWARD);										//�O�i����悤�Ƀ��[�^�̉�]������ݒ�
+	MF.FLAG.CTRL = 0;										//制御を無効にする
+	set_dir(TURN_L);										//左に回転するようモータの回転方向を設定
+	driveC(DR_ROT_L90, 1);									//定速で指定パルス分回転。回転後に停止する
+	Wait;													//完全に停止するまで待機
+	set_dir(FORWARD);										//前進するようにモータの回転方向を設定
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //turn_180
-//	180�x��]����
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	180度回転する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void turn_180()
 {
-	MF.FLAG.CTRL = 0;										//����𖳌��ɂ���
-	set_dir(TURN_R);										//���ɉ�]����悤���[�^�̉�]������ݒ�
-	driveC(DR_ROT_180, 1);									//�葬�Ŏw��p���X����]�B��]��ɒ�~����
-	Wait;													//���S�ɒ�~����܂őҋ@
-	set_dir(FORWARD);										//�O�i����悤�Ƀ��[�^�̉�]������ݒ�
+	MF.FLAG.CTRL = 0;										//制御を無効にする
+	set_dir(TURN_R);										//左に回転するようモータの回転方向を設定
+	driveC(DR_ROT_180, 1);									//定速で指定パルス分回転。回転後に停止する
+	Wait;													//完全に停止するまで待機
+	set_dir(FORWARD);										//前進するようにモータの回転方向を設定
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //set_position
-//	�@�̂̐K��ǂɓ��Ăďꏊ����撆���ɍ��킹��
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	機体の尻を壁に当てて場所を区画中央に合わせる
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void set_position()
 {
-	MF.FLAG.CTRL = 0;										//����𖳌��ɂ���
-	set_dir(BACK);											//��ނ���悤���[�^�̉�]������ݒ�
-	driveC(DR_CENT_BACK, 1);								//�K�𓖂Ă���x�Ɍ�ށB��]��ɒ�~����
-	set_dir(FORWARD);										//�O�i����悤�Ƀ��[�^�̉�]������ݒ�
-	driveC(DR_CENT_SET, 1);									//�葬�Ŏw��p���X����]�B��]��ɒ�~����
-  	Wait;												//���S�ɒ�~����܂őҋ@
+	MF.FLAG.CTRL = 0;										//制御を無効にする
+	set_dir(BACK);											//後退するようモータの回転方向を設定
+	driveC(DR_CENT_BACK, 1);								//尻を当てる程度に後退。回転後に停止する
+	set_dir(FORWARD);										//前進するようにモータの回転方向を設定
+	driveC(DR_CENT_SET, 1);									//定速で指定パルス分回転。回転後に停止する
+  	Wait;												//完全に停止するまで待機
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //driveA
-//	�w��p���X���������s����
-// ����1�Fdist�E�E�E���s����p���X
-// ����2�Frs�E�E�E���s���~���邩�@1:����@����ȊO:���Ȃ�
-// �߂�l�F�Ȃ�
+//	指定パルス分加速走行する
+// 引数1：dist・・・走行するパルス
+// 引数2：rs・・・走行後停止するか　1:する　それ以外:しない
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void driveA(uint16_t dist, unsigned char rs) {
-	//====���s====
-	//----���s�J�n----
-	MF.FLAGS = 0x10 | (MF.FLAGS & 0x0F);					//�����E�葬�E�X�g�b�v�t���O��0�ɁA�����t���O��1�ɂ���
-	drive_start();											//���s�J�n
+	//====走行====
+	//----走行開始----
+	MF.FLAGS = 0x10 | (MF.FLAGS & 0x0F);					//減速・定速・ストップフラグを0に、加速フラグを1にする
+	drive_start();											//走行開始
 
-	//----���s----
-	while((pulse_l < dist) && (pulse_r < dist));			//���E�̃��[�^���w��p���X�ȏ�i�ނ܂őҋ@
+	//----走行----
+	while((pulse_l < dist) && (pulse_r < dist));			//左右のモータが指定パルス以上進むまで待機
 
-	//----��~��������Β�~----
+	//----停止許可があれば停止----
 	drive_stop(rs);
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //driveD
-//	�w��p���X���������s���Ē�~����
-// ����1�Fdist�E�E�E���s����p���X
-// ����2�Frs�E�E�E���s���~���邩�@1:����@����ȊO:���Ȃ�
-// �߂�l�F�Ȃ�
+//	指定パルス分減速走行して停止する
+// 引数1：dist・・・走行するパルス
+// 引数2：rs・・・走行後停止するか　1:する　それ以外:しない
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void driveD(uint16_t dist, unsigned char rs) {
-	//====�ϐ��錾====
-	signed int c_pulse;							//�������s�̃p���X��
+	//====変数宣言====
+	signed int c_pulse;							//等速走行のパルス数
 
-	//----�K�v�p���X���̎Z�o----
-	c_pulse = dist + minindex - t_cnt_l;					//�������s�̃p���X=�������̃p���X-����������̂ɕK�v�ȃp���X
-															//=�������̃p���X-(���݂̑��x�̃p���X-�Œ�̃p���X��)
-	if(c_pulse < 0) c_pulse = 0;							//���ɂȂ����Ƃ���0�ɂ���
+	//----必要パルス数の算出----
+	c_pulse = dist + minindex - t_cnt_l;					//等速走行のパルス=総距離のパルス-減速しきるのに必要なパルス
+															//=総距離のパルス-(現在の速度のパルス-最低のパルス数)
+	if(c_pulse < 0) c_pulse = 0;							//負になったときは0にする
 
-	//====���s====
-	//----���s�J�n----
-	MF.FLAGS = 0x00 | (MF.FLAGS & 0x0F);					//�����E�����E�葬�E�X�g�b�v�t���O��0�ɂ���
-	drive_start();											//����J�n
+	//====走行====
+	//----走行開始----
+	MF.FLAGS = 0x00 | (MF.FLAGS & 0x0F);					//加速・減速・定速・ストップフラグを0にする
+	drive_start();											//痩躯開始
 
-	//----���s----
-	while((pulse_l < c_pulse) && (pulse_r < c_pulse));		//���E�̃��[�^���葬���̃p���X�ȏ�i�ނ܂őҋ@
-	MF.FLAG.DECL = 1;										//�����t���O��1��
-	while((pulse_l < dist) && (pulse_r < dist));			//���E�̃��[�^���������̃p���X�ȏ�i�ނ܂őҋ@
+	//----走行----
+	while((pulse_l < c_pulse) && (pulse_r < c_pulse));		//左右のモータが定速分のパルス以上進むまで待機
+	MF.FLAG.DECL = 1;										//減速フラグを1に
+	while((pulse_l < dist) && (pulse_r < dist));			//左右のモータが減速分のパルス以上進むまで待機
 
-	//----��~�[�u----
-	drive_stop(rs);											//���s�I���A��~��������Β�~
+	//----停止措置----
+	drive_stop(rs);											//走行終了、停止許可があれば停止
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //driveAD
-//	�w��p���X������(or����)�E�������s���Ē�~����
-// ����1�Fdist�E�E�E���s����p���X
-// ����2�Frs�E�E�E���s���~���邩�@1:����@����ȊO:���Ȃ�
-// �߂�l�F�Ȃ�
+//	指定パルス分加速(or等速)・減速走行して停止する
+// 引数1：dist・・・走行するパルス
+// 引数2：rs・・・走行後停止するか　1:する　それ以外:しない
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void driveAD(uint16_t dist, unsigned char rs)
 {
-	//====�ϐ��錾====
-	signed int ac_pulse;									//���E�������s�̃p���X��
+	//====変数宣言====
+	signed int ac_pulse;									//等・加速走行のパルス数
 
-	//----�������s�p���X���̎Z�o----
-	ac_pulse = dist + minindex - t_cnt_l;					//�������s�̃p���X=�������̃p���X-����������̂ɕK�v�ȃp���X
-															//=�������̃p���X-(���݂̑��x�̃p���X-�Œ�̃p���X��)
-	//====���s====
-	//----���s�J�n----
-	MF.FLAGS = 0x10 | (MF.FLAGS & 0x0F);					//�����E�葬�E�X�g�b�v�t���O��0�ɁA�����t���O��1�ɂ���
-	drive_start();											//���s�J�n
+	//----加速走行パルス数の算出----
+	ac_pulse = dist + minindex - t_cnt_l;					//加速走行のパルス=総距離のパルス-減速しきるのに必要なパルス
+															//=総距離のパルス-(現在の速度のパルス-最低のパルス数)
+	//====走行====
+	//----走行開始----
+	MF.FLAGS = 0x10 | (MF.FLAGS & 0x0F);					//減速・定速・ストップフラグを0に、加速フラグを1にする
+	drive_start();											//走行開始
 
-	//----���s----
-	while((pulse_l < ac_pulse) && (pulse_r < ac_pulse));	//���E�̃��[�^���葬���̃p���X�ȏ�i�ނ܂őҋ@
-	ac_pulse = dist + minindex - t_cnt_l;					//�p���X�̍Čv�Z
-	MF.FLAG.DECL = 1;										//�����t���O��1��
-	while((pulse_l < dist) && (pulse_r < dist));			//���E�̃��[�^���������̃p���X�ȏ�i�ނ܂őҋ@
+	//----走行----
+	while((pulse_l < ac_pulse) && (pulse_r < ac_pulse));	//左右のモータが定速分のパルス以上進むまで待機
+	ac_pulse = dist + minindex - t_cnt_l;					//パルスの再計算
+	MF.FLAG.DECL = 1;										//減速フラグを1に
+	while((pulse_l < dist) && (pulse_r < dist));			//左右のモータが減速分のパルス以上進むまで待機
 
-	//----��~�[�u----
-	drive_stop(rs);											//���s�I���A��~��������Β�~
+	//----停止措置----
+	drive_stop(rs);											//走行終了、停止許可があれば停止
 
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //driveU
-//	�w��p���X���������s���Ē�~����
-// ����1�Fdist�E�E�E���s����p���X
-// ����2�Frs�E�E�E���s���~���邩�@1:����@����ȊO:���Ȃ�
-// �߂�l�F�Ȃ�
+//	指定パルス分等速走行して停止する
+// 引数1：dist・・・走行するパルス
+// 引数2：rs・・・走行後停止するか　1:する　それ以外:しない
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void driveU(uint16_t dist, unsigned char rs)
 {
 
-	//====�������s�J�n====
-	MF.FLAGS = 0x00 | (MF.FLAGS & 0x0F);					//�����E�����E�葬�E�X�g�b�v�t���O��0�ɂ���
-	drive_start();											//���s�J�n
+	//====等速走行開始====
+	MF.FLAGS = 0x00 | (MF.FLAGS & 0x0F);					//加速・減速・定速・ストップフラグを0にする
+	drive_start();											//走行開始
 
-	//====���s====
-	while((pulse_l < dist) && (pulse_r < dist));			//���E�̃��[�^���������̃p���X�ȏ�i�ނ܂őҋ@
+	//====走行====
+	while((pulse_l < dist) && (pulse_r < dist));			//左右のモータが減速分のパルス以上進むまで待機
 
-	//====���s�I��====
-	//----��~��������Β�~----
-	drive_stop(rs);											//���s�I���A��~��������Β�~
+	//====走行終了====
+	//----停止許可があれば停止----
+	drive_stop(rs);											//走行終了、停止許可があれば停止
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //driveC
-//	�w��p���X���葬���s���Ē�~����
-// ����1�Fdist�E�E�E���s����p���X
-// ����2�Frs�E�E�E���s���~���邩�@1:����@����ȊO:���Ȃ�
-// �߂�l�F�Ȃ�
+//	指定パルス分定速走行して停止する
+// 引数1：dist・・・走行するパルス
+// 引数2：rs・・・走行後停止するか　1:する　それ以外:しない
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void driveC(uint16_t dist, unsigned char rs)
 {
 
-	//====��]�J�n====
-	MF.FLAGS = 0x40 | (MF.FLAGS & 0x0F);					//�����E�����E�X�g�b�v�t���O��0�ɂ��A�葬�t���O��1�ɂ���
-	drive_start();											//���s�J�n
+	//====回転開始====
+	MF.FLAGS = 0x40 | (MF.FLAGS & 0x0F);					//加速・減速・ストップフラグを0にし、定速フラグを1にする
+	drive_start();											//走行開始
 
-	//====��]====
-	while((pulse_l < dist) && (pulse_r < dist));			//���E�̃��[�^���葬���̃p���X�ȏ�i�ނ܂őҋ@
+	//====回転====
+	while((pulse_l < dist) && (pulse_r < dist));			//左右のモータが定速分のパルス以上進むまで待機
 
-	drive_stop(rs);											//���s�I���A��~��������Β�~
+	drive_stop(rs);											//走行終了、停止許可があれば停止
 
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //drive_start
-//	���s���J�n����
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	走行を開始する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void drive_start(void){
-	time = 0;									//���s�����p���X���̏�����	
-	R_PG_Timer_StartCount_MTU_U0_C3();  //�����[�^
+	time = 0;									//走行したパルス数の初期化	
+	R_PG_Timer_StartCount_MTU_U0_C3();  //左モータ
 	R_PG_Timer_StartCount_MTU_U0_C4();
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //drive_stop
-//	���s�I�����A��~��������Β�~����
-// ����1�Frs�E�E�E���s���~���邩�@1:����@����ȊO:���Ȃ�
-// �߂�l�F�Ȃ�
+//	走行終了し、停止許可があれば停止する
+// 引数1：rs・・・走行後停止するか　1:する　それ以外:しない
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void drive_stop(unsigned char rs){
 	R_PG_Timer_HaltCount_MTU_U0_C3();
@@ -306,40 +306,40 @@ void drive_stop(unsigned char rs){
 	pin_write(P55,0);
 	pin_write(PA4,0);
 	pin_write(PA6,0);
-	//====��~����====
-	if(rs) MF.FLAG.STOP = 1;								//��~����̂ł���΃X�g�b�v�t���O��1��
+	//====停止処理====
+	if(rs) MF.FLAG.STOP = 1;								//停止するのであればストップフラグを1に
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //set_dir
-//	�i�s������ݒ肷��
-// ����1�Fd_dir�E�E�E�ǂ̕����ɐi�s���邩  0���ڂō��A1���ڂŉE�̕����ݒ�
-// �߂�l�F�Ȃ�
-//		DC�p�ɉ�������
+//	進行方向を設定する
+// 引数1：d_dir・・・どの方向に進行するか  0桁目で左、1桁目で右の方向設定
+// 戻り値：なし
+//		DC用に改造完了
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void set_dir(unsigned char d_dir)
 {
-	//====�����[�^====
-	switch(d_dir & 0x0f){									//0~3�r�b�g�ڂ����o��
-		//----����]----
+	//====左モータ====
+	switch(d_dir & 0x0f){									//0~3ビット目を取り出す
+		//----正回転----
 		case 0x00:									
-			MF.FLAG.L_FRONT = 1;						//����O�i�����ɐݒ�
+			MF.FLAG.L_FRONT = 1;						//左を前進方向に設定
 			MF.FLAG.L_BEHIND = 0;
 			break;
-		//----�t��]----
+		//----逆回転----
 		case 0x01:								 
-			MF.FLAG.L_FRONT = 0;				//������i�����ɐݒ�
+			MF.FLAG.L_FRONT = 0;				//左を後進方向に設定
 			MF.FLAG.L_BEHIND= 1;
 			break;
 	}
-	//====�E���[�^====
-	switch(d_dir & 0xf0){									//4~7�r�b�g�ڂ����o��
-		case 0x00:											//0x00�̏ꍇ
-			MF.FLAG.R_FRONT = 1;					//�E��O�i�����ɐݒ�
+	//====右モータ====
+	switch(d_dir & 0xf0){									//4~7ビット目を取り出す
+		case 0x00:											//0x00の場合
+			MF.FLAG.R_FRONT = 1;					//右を前進方向に設定
 			MF.FLAG.R_BEHIND = 0;
 			break;
-		case 0x10:											//0x10�̏ꍇ
-			MF.FLAG.R_FRONT = 0;					//�E����i�����ɐݒ�
+		case 0x10:											//0x10の場合
+			MF.FLAG.R_FRONT = 0;					//右を後進方向に設定
 			MF.FLAG.R_BEHIND = 1;
 			break;
 	}
@@ -347,23 +347,23 @@ void set_dir(unsigned char d_dir)
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //test_drive
-//	���s�֌W�̃e�X�g������
-// ����1�Fmode�E�E�E���[�h�ԍ����i�[����ϐ��̃A�h���X
-// �߂�l�F�Ȃ�
+//	走行関係のテストをする
+// 引数1：mode・・・モード番号を格納する変数のアドレス
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void test_drive(char *mode){
 
 	while(1){											
-		uart_printf("test_drive:\n");						//UART�ő��M
-		select_mode(mode);									//���[�h�I����������
+		uart_printf("test_drive:\n");						//UARTで送信
+		select_mode(mode);									//モード選択をさせる
 		ms_wait(50);
-		switch(*mode){										//���[�h�ԍ��ɂ�蕪��
-			//----�ʒu�̒���----
+		switch(*mode){										//モード番号により分岐
+			//----位置の調整----
 			case 0:
 				set_position();
 				break;
 
-			//----����葬���s----
+			//----一区画定速走行----
 			case 1:
 				sensor_start();
 				set_dir(FORWARD);
@@ -398,7 +398,7 @@ void test_drive(char *mode){
 				uart_printf("BREAK \r\n");
 				break;
 
-			//----�E90��]----
+			//----右90回転----
 			case 2:
 				turn_R90();
 				turn_R90();
@@ -418,7 +418,7 @@ void test_drive(char *mode){
 				turn_R90();
 				break;
 
-			//----��90��]----
+			//----左90回転----
 			case 3:
 				turn_L90();
 				turn_L90();
@@ -438,7 +438,7 @@ void test_drive(char *mode){
 				turn_L90();
 				break;
 
-			//----180��]----
+			//----180回転----
 			case 4:
 				turn_180();
 				turn_180();
@@ -460,7 +460,7 @@ void test_drive(char *mode){
 
 				break;
 
-			//----����������8���----
+			//----高速加減速8区画----
 			case 7:
 				minindex = MINSPEED_H;
 				maxindex = MAXSPEED_H;
@@ -469,7 +469,7 @@ void test_drive(char *mode){
 				driveAD((DR_SEC_HALF*2) * 6, 1);
 				break;
 
-			//----�T���p������1���----
+			//----探索用加減速1区画----
 			case 8:
 				minindex = MINSPEED_S;
 				maxindex = MAXSPEED_S;

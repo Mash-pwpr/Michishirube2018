@@ -1,24 +1,24 @@
-/*
+ï»¿/*
 ==============================================================
  Name        : port.h
- Copyright   : Copyright (C) ‘ˆî“c‘åŠwƒ}ƒCƒNƒƒ}ƒEƒXƒNƒ‰ƒu
- Description : Šeíƒsƒ“‚Ì“üo—Í‚¨‚æ‚Ñ‚»‚Ìİ’è‚ğs‚¤
+ Copyright   : Copyright (C) æ—©ç¨²ç”°å¤§å­¦ãƒã‚¤ã‚¯ãƒ­ãƒã‚¦ã‚¹ã‚¯ãƒ©ãƒ–
+ Description : å„ç¨®ãƒ”ãƒ³ã®å…¥å‡ºåŠ›ãŠã‚ˆã³ãã®è¨­å®šã‚’è¡Œã†
 
- XV—š—ğ
- 2015/12/4		Rã@ƒRƒƒ“ƒg’Ç‰Á
+ æ›´æ–°å±¥æ­´
+ 2015/12/4		å±±ä¸Šã€€ã‚³ãƒ¡ãƒ³ãƒˆè¿½åŠ 
 ==============================================================
 */
 
-/*ƒwƒbƒ_ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ*/
+/*ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿*/
 #include "macro.h"
 #include"stdint.h"
 
-#ifndef PORT_H_											//‘Î‰ƒtƒ@ƒCƒ‹‚Åˆê“x‚à“Ç‚İ‚Ü‚ê‚Ä‚¢‚È‚¢ê‡ˆÈ‰º‚ğ’è‹`
+#ifndef PORT_H_											//å¯¾å¿œãƒ•ã‚¡ã‚¤ãƒ«ã§ä¸€åº¦ã‚‚èª­ã¿è¾¼ã¾ã‚Œã¦ã„ãªã„å ´åˆä»¥ä¸‹ã‚’å®šç¾©
 
-	#define PORT_H_										//“Ç‚İ‚ñ‚¾‚±‚Æ‚ğ•\‚·
+	#define PORT_H_										//èª­ã¿è¾¼ã‚“ã ã“ã¨ã‚’è¡¨ã™
 
 
-	enum {												//GPIO‚Ìq”Ô†‚Ì—ñ‹“Œ^
+	enum {												//GPIOã®å­ç•ªå·ã®åˆ—æŒ™å‹
 		P0_0, P0_1, P0_2, P0_3,
 		P0_4, P0_5, P0_6, P0_7,
 		P0_8, P0_9, P0_10, P0_11,
@@ -38,25 +38,25 @@
 		P3_4, P3_5
 	};
 
-	enum{												//ƒsƒ“‚Ì“üo—Í‚Ì—ñ‹“Œ^
-		IN,												//“ü—Í(=0)
-		OUT												//o—Í(=1)
+	enum{												//ãƒ”ãƒ³ã®å…¥å‡ºåŠ›ã®åˆ—æŒ™å‹
+		IN,												//å…¥åŠ›(=0)
+		OUT												//å‡ºåŠ›(=1)
 	};
 
 
-	/*ƒ}ƒNƒ‚Ì’è‹`*/
-	#define PIN_H(pin)			pin_write(pin, 1)									//‘Î‰ƒsƒ“‚Ìo—Í‚ğHigh‚É‚·‚é
-	#define PIN_L(pin)			pin_write(pin, 0)									//‘Î‰ƒsƒ“‚Ìo—Í‚ğLow‚É‚·‚é
-	#define PIN_SET(pin, dat)	pin_write(pin, dat)									//‘Î‰ƒsƒ“‚Ìo—Í‚ğİ’è
+	/*ãƒã‚¯ãƒ­ã®å®šç¾©*/
+	#define PIN_H(pin)			pin_write(pin, 1)									//å¯¾å¿œãƒ”ãƒ³ã®å‡ºåŠ›ã‚’Highã«ã™ã‚‹
+	#define PIN_L(pin)			pin_write(pin, 0)									//å¯¾å¿œãƒ”ãƒ³ã®å‡ºåŠ›ã‚’Lowã«ã™ã‚‹
+	#define PIN_SET(pin, dat)	pin_write(pin, dat)									//å¯¾å¿œãƒ”ãƒ³ã®å‡ºåŠ›ã‚’è¨­å®š
 
-	#define PIN_DIR(pin, dir)	PIN_SET(pin, dir)									//‘Î‰ƒsƒ“‚Ì“üo—Í‚ğİ’è
+	#define PIN_DIR(pin, dir)	PIN_SET(pin, dir)									//å¯¾å¿œãƒ”ãƒ³ã®å…¥å‡ºåŠ›ã‚’è¨­å®š
 
-/*	#define PIN_IS_SET(pin)		bit_is_set(LPC_GPIO[pin>>4]->DATA, pin&0x0f)		//‘Î‰ƒsƒ“‚Ì“ü—Í‚ªHigh‚©”»’è
-	#define PIN_IS_CLEAR(pin)	bit_is_clear(LPC_GPIO[pin>>4]->DATA, pin&0x0f)		//‘Î‰ƒsƒ“‚Ì“ü—Í‚ªLow‚©”»’è
-	#define PIN_STAT(pin)		PIN_IS_SET(pin)										//‘Î‰ƒsƒ“‚Ì“ü—Í‚ğ•Ô‚·
+/*	#define PIN_IS_SET(pin)		bit_is_set(LPC_GPIO[pin>>4]->DATA, pin&0x0f)		//å¯¾å¿œãƒ”ãƒ³ã®å…¥åŠ›ãŒHighã‹åˆ¤å®š
+	#define PIN_IS_CLEAR(pin)	bit_is_clear(LPC_GPIO[pin>>4]->DATA, pin&0x0f)		//å¯¾å¿œãƒ”ãƒ³ã®å…¥åŠ›ãŒLowã‹åˆ¤å®š
+	#define PIN_STAT(pin)		PIN_IS_SET(pin)										//å¯¾å¿œãƒ”ãƒ³ã®å…¥åŠ›ã‚’è¿”ã™
 */
 
-	/*ŠÖ”‚Ìƒvƒƒgƒ^ƒCƒvéŒ¾*/
+	/*é–¢æ•°ã®ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€*/
 	void pin_write(uint16_t pin, unsigned char dat);
 	void pins_write(uint16_t pin[], unsigned char dat, unsigned char cnt);
 	void pin_dir(uint16_t pin, unsigned char dir);

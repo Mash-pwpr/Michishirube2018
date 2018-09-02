@@ -1,24 +1,21 @@
-/*
-==============================================================
- Name        : interrupt.c
- Copyright   : Copyright (C) ‘ˆî“c‘åŠwƒ}ƒCƒNƒƒ}ƒEƒXƒNƒ‰ƒu
- Description : Š„‚è‚İŠÖ”‚½‚¿‚Å‚·D(‘½•ª)lpc11xx.h‚Åƒvƒƒgƒ^ƒCƒvéŒ¾‚³‚ê‚Ä‚¢‚Ü‚·D
+ï»¿/*
+å‰²è¾¼é–¢ä¿‚ã®å‡¦ç†
+å·¦å³ãƒ¢ãƒ¼ã‚¿ã¸ã®PWM
+å·¦å³ã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€å‡¦ç†
+å£ã‚»ãƒ³ã‚µå‡¦ç†
+ã‚¸ãƒ£ã‚¤ãƒ­å‡¦ç†
+åˆ¶å¾¡å€¤ç¢ºå®šãªã©ãªã©
 
- XV—š—ğ
- 2015/12/4		Rã	ƒRƒƒ“ƒg’Ç‰ÁAtp‚Ìˆ—‚ğ•ª‚©‚è‚â‚·‚­•ÏX
- 2016/2/24		Rã	2016”N“x—p‚Éƒsƒ“İ’è‚ğ•ÏX
- 2017/10/14		“ˆè ‰ÁŒ¸‘¬‚ÌğŒ•ªŠòƒƒWƒbƒNŒë‚è‚ğC³(ƒJƒEƒ“ƒ^‚ªƒI[ƒo[ƒtƒ[‚·‚é)
-==============================================================
- */
+*/
 #include "global.h"
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //Mtu3IcCmDIntFunction
-//Š„‚è‚İŠÖ”A¶ƒ‚[ƒ^‚ÌŠÇ—‚ğs‚¤
-// ˆø”F–³‚µ
-// –ß‚è’lF–³‚µ
+//å·¦ãƒ¢ãƒ¼ã‚¿ã®åˆ¶å¾¡é–¢æ•°
+// PWMã‚’ï¼‘ãƒ‘ãƒ«ã‚¹é€ã‚‹ã”ã¨ã«å‘¼ã³å‡ºã•ã‚Œã‚‹
+// RX631ã§ã¯1msã‚ˆã‚Šã¯çŸ­ããªã‚‹ã“ã¨ãŒå¤šã„ã‹ã‚‰è¨ˆç®—é‡ã«æ³¨æ„
 //+++++++++++++++++++++++++++++++++++++++++++++++
-void Mtu3IcCmDIntFunc(void){		//====¶ƒ‚[ƒ^Š„‚è‚İ====
+void Mtu3IcCmDIntFunc(void){		//ãƒ‘ãƒ«ã‚¹ä¸€å‘¨æœŸã§ã‚„ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã‚‹å·¦ãƒ¢ãƒ¼ã‚¿ã®åˆ¶å¾¡é–¢æ•°
 
 	uint16_t paraL0;
 	uint16_t paraL1 = 65535;
@@ -32,28 +29,28 @@ void Mtu3IcCmDIntFunc(void){		//====¶ƒ‚[ƒ^Š„‚è‚İ====
 		duty_l = 0.8;
 	}
 
-		//====‰ÁŒ¸‘¬ˆ—====
-		//----Œ¸‘¬ˆ—----
-/*		if(MF.FLAG.DECL){															//Œ¸‘¬ƒtƒ‰ƒO‚ª1‚Å‚ ‚éê‡
+		//====åŠ æ¸›é€Ÿå‡¦ç†====
+		//----åŠ é€Ÿ----
+/*		if(MF.FLAG.DECL){		
 			
 		}
-		//----‰Á‘¬ˆ—----
-		else if(MF.FLAG.ACCL){														//‰Á‘¬ƒtƒ‰ƒO‚ª1‚Å‚ ‚éê‡
+		//----æ¸›é€Ÿ----
+		else if(MF.FLAG.ACCL){					
 			
 		}
 
-/*		//----’â~’†‚Ìˆ—----
-		if(MF.FLAG.STOP){															//’â~ƒtƒ‰ƒO‚ª1‚Å‚ ‚éê‡
+/*		//----åœæ­¢å‡¦ç†----
+		if(MF.FLAG.STOP){															
 			paraL1 = 0;
-				//----ƒfƒtƒHƒ‹ƒg‚Ì‘¬“x----
-		}else if(MF.FLAG.DEF){														//’è‘¬ƒtƒ‰ƒO‚ª1‚Å‚ ‚éê‡
-			paraL0 = DEFGRC - sen_dl;											//’è‘¬‚É‘Î‚µ‚Ä§Œä‚ğ‚µ‚½’l‚Éİ’è
-			//----‚»‚Ì‘¼‚Ì‚Æ‚«----
+				//----å®šé€Ÿå‡¦ç†----
+		}else if(MF.FLAG.DEF){														
+			paraL0 = DEFGRC - sen_dl;
+			//----ãã®ä»–----
 		}else{
-			paraL0 = table[t_cnt_l] - sen_dl;									//¶ƒ‚[ƒ^ƒCƒ“ƒ^[ƒoƒ‹İ’è
+			paraL0 = table[t_cnt_l] - sen_dl;									
 		}
 */
-		paraL0 = (1 - duty_l) * paraL1;									//o—Íƒpƒ‹ƒX•”•ª‚ğİ’è
+		paraL0 = (1 - duty_l) * paraL1;									//ãƒ‡ãƒ¥ãƒ¼ãƒ†ã‚£é€†è¨ˆç®—
 		test_valL[time]  = duty_l;
 		R_PG_Timer_SetTGR_C_MTU_U0_C3(paraL0);
 		R_PG_Timer_SetTGR_D_MTU_U0_C3(paraL1);
@@ -74,11 +71,11 @@ void Mtu3IcCmCIntFunc(void){
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //Mtu4IcCmDIntFunc
-//	16ƒrƒbƒgƒ^ƒCƒ}[1‚ÌŠ„‚è‚İŠÖ”A‰Eƒ‚[ƒ^‚ÌŠÇ—‚ğs‚¤
-// ˆø”F–³‚µ
-// –ß‚è’lF–³‚µ
+//å·¦ãƒ¢ãƒ¼ã‚¿ã®åˆ¶å¾¡é–¢æ•°
+// PWMã‚’ï¼‘ãƒ‘ãƒ«ã‚¹é€ã‚‹ã”ã¨ã«å‘¼ã³å‡ºã•ã‚Œã‚‹
+// RX631ã§ã¯1msã‚ˆã‚Šã¯çŸ­ããªã‚‹ã“ã¨ãŒå¤šã„ã‹ã‚‰è¨ˆç®—é‡ã«æ³¨æ„
 //+++++++++++++++++++++++++++++++++++++++++++++++
-void Mtu4IcCmDIntFunc(void){			//====‰Eƒ‚[ƒ^Š„‚è‚İ====
+void Mtu4IcCmDIntFunc(void){			//å³ãƒ¢ãƒ¼ã‚¿åˆ¶å¾¡é–¢æ•°
 	uint16_t paraR0 = 40000;
 	uint16_t paraR1 = 65535;
 
@@ -91,29 +88,29 @@ void Mtu4IcCmDIntFunc(void){			//====‰Eƒ‚[ƒ^Š„‚è‚İ====
 		duty_r = 0.8;
 	}
 	
-	//====‰ÁŒ¸‘¬ˆ—====
-	//----Œ¸‘¬ˆ—----
-/*	if(MF.FLAG.DECL){															//Œ¸‘¬ƒtƒ‰ƒO‚ª1‚Å‚ ‚éê‡
-		if(t_cnt_r > minindex) t_cnt_r--; //Å’á‘¬“xˆÈã‚Ìê‡ƒe[ƒuƒ‹ƒJƒEƒ“ƒ^‚ğŒ¸‚ç‚·‚±‚Æ‚ÅŒ¸‘¬
+	//====åŠ æ¸›é€Ÿå‡¦ç†====
+	//----æ¸›é€Ÿ----
+/*	if(MF.FLAG.DECL){															
+		if(t_cnt_r > minindex) t_cnt_r--; 
 	}
-	//----‰Á‘¬ˆ—----
-	else if(MF.FLAG.ACCL){														//‰Á‘¬ƒtƒ‰ƒO‚ª1‚Å‚ ‚éê‡
-		if(t_cnt_r < maxindex) t_cnt_r++; //Å’á‘¬“xˆÈ‰º‚Ìê‡ƒe[ƒuƒ‹ƒJƒEƒ“ƒ^‚ğ‘‚â‚·‚±‚Æ‚Å‰Á‘¬
+	//----åŠ é€Ÿ----
+	else if(MF.FLAG.ACCL){			
+		if(t_cnt_r < maxindex) t_cnt_r++; 
 	}
 
-	//----’â~’†‚Ìˆ—----
-	if(MF.FLAG.STOP){															//’â~ƒtƒ‰ƒO‚ª1‚Å‚ ‚éê‡
+	//----åœæ­¢å‡¦ç†----
+	if(MF.FLAG.STOP){			
 		paraR1 = 0;
 	
-//----ƒfƒtƒHƒ‹ƒg‚Ì‘¬“x----
-	}else if(MF.FLAG.DEF){														//’è‘¬ƒtƒ‰ƒO‚ª1‚Å‚ ‚éê‡
-		paraR0 = DEFGRC - sen_dr;											//’è‘¬‚É‘Î‚µ‚Ä§Œä‚ğ‚µ‚½’l‚Éİ’è
-		//----‚»‚Ì‘¼‚Ì‚Æ‚«----
+//----å®šé€Ÿ----
+	}else if(MF.FLAG.DEF){														
+		paraR0 = DEFGRC - sen_dr;							
+		//----?????????----
 	}else{
-		paraR0 = table[t_cnt_r] - sen_dr;									//‰Eƒ‚[ƒ^ƒCƒ“ƒ^[ƒoƒ‹İ’è
+		paraR0 = table[t_cnt_r] - sen_dr;									
 	}
 */
-	paraR0 = (1 - duty_r) * paraR1;									//o—Íƒpƒ‹ƒX•”•ª‚ğİ’è
+	paraR0 = (1 - duty_r) * paraR1;									
 	
 	R_PG_Timer_SetTGR_C_MTU_U0_C4(paraR0);
 	R_PG_Timer_SetTGR_D_MTU_U0_C4(paraR1);
@@ -135,22 +132,22 @@ void Mtu4IcCmCIntFunc(void){
 	volt_bat = ad_res[6];
 }
 /*------------------------------------------------------------
-		32bitƒ^ƒCƒ}Š„‚è‚İ
+		ã‚»ãƒ³ã‚µç³»ã®å‰²ã‚Šè¾¼ã¿
 ------------------------------------------------------------*/
 //+++++++++++++++++++++++++++++++++++++++++++++++
-//Cmt0IntFunc
-//32ƒrƒbƒgƒ^ƒCƒ}[0‚ÌŠ„‚è‚İŠÖ”AƒZƒ“ƒT’l‚Ìæ“¾‚Æ§Œä‚ğs‚¤
-// ˆø”F–³‚µ
-// –ß‚è’lF–³‚µ
+//Cmt1IntFunc
+//0.25msæ¯ã«å‰²ã‚Šè¾¼ã¿
+// å£ã‚»ãƒ³ã‚µã®å–å¾—ã¨åˆ¶å¾¡å€¤ã®è¨ˆç®—
+// ???l?F????
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void Cmt1IntFunc(void){
 
-	time++;			//Š„‚è‚İŠJnŒã‚ÌŠÔ‚ğms’PˆÊ‚Å‘ª’è
+	time++;			//æ™‚é–“è¨ˆæ¸¬ã—ãŸã„
 	
 	switch(tp){
-	//----ƒZƒ“ƒTˆ—----
+	//ã‚¿ã‚¤ãƒå†…ã§ã®åˆ†å‰²å‡¦ç†
 	case 0:	
-		//¶ƒZƒ“ƒT’l‚Ìæ“¾
+		//å·¦å£ã‚»ãƒ³ã‚µ
 		pin_write(PE1,1);
 		stay(100);
 		S12AD.ADANS0.WORD = 0x02;
@@ -158,7 +155,7 @@ void Cmt1IntFunc(void){
 		R_PG_ADC_12_GetResult_S12AD0(ad_res);
 		ad_l = ad_res[1];
 		
-		//‰EƒZƒ“ƒT’l‚Ìæ“¾
+		//å³å£ã‚»ãƒ³ã‚µ
 		pin_write(PE3,1);
 		stay(100);
 		S12AD.ADANS0.WORD = 0x08;
@@ -171,10 +168,10 @@ void Cmt1IntFunc(void){
 		pin_write(PE1,0);
 		pin_write(PE3,0);
 				
-		//³–ÊƒZƒ“ƒT’l‚Ìæ“¾
+		//æ­£é¢å£ã‚»ãƒ³ã‚µ
 		
-		pin_write(PE0,1);								//”­Œõ•”LED‚ğON
-		pin_write(PE2,1);								//”­Œõ•”LED‚ğON
+		pin_write(PE0,1);								//??????LED??ON
+		pin_write(PE2,1);								//??????LED??ON
 		pin_write(PE4,1);
 	
 		stay(100);
@@ -206,25 +203,25 @@ void Cmt1IntFunc(void){
 		R_PG_Timer_GetCounterValue_MTU_U0_C1(&pulse_l);
 		R_PG_Timer_GetCounterValue_MTU_U0_C2(&pulse_r);
 		
-		if(pulse_sum_r > 0){				//ƒAƒ“ƒ_[ƒtƒ[
+		if(pulse_sum_r > 0){				//ã‚¢ãƒ³ãƒ€ãƒ¼ãƒ•ãƒ­ãƒ¼
 			dif_pulse_r = - (65535 * pulse_sum_r  + pulse_pre_r - pulse_r) ;
 			pulse_sum_r = 0;
-		}else if(pulse_sum_r < 0){			//ƒI[ƒo[ƒtƒ[
+		}else if(pulse_sum_r < 0){			//ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼
 			dif_pulse_r = 65535 * pulse_sum_r + pulse_pre_r - pulse_r;
 			pulse_sum_r = 0;
 		}else{
-			dif_pulse_r = pulse_r - pulse_pre_r;	//’Êí‚Ìƒpƒ‹ƒX•Ï‰»
+			dif_pulse_r = pulse_r - pulse_pre_r;	//é€šå¸¸æ™‚ã®å‡¦ç†
 			pulse_sum_r = 0;
 		}
 		
-		if(pulse_sum_l > 0 ){				//ƒAƒ“ƒ_[ƒtƒ[
+		if(pulse_sum_l > 0 ){				//ã‚¢ãƒ³ãƒ€ãƒ¼ãƒ•ãƒ­ãƒ¼
 			dif_pulse_l = - (65535 * pulse_sum_l + pulse_pre_l - pulse_l);
 			pulse_sum_l = 0;
-		}else if(pulse_sum_l < 0){			//ƒI[ƒo[ƒtƒ[
+		}else if(pulse_sum_l < 0){			//ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼
 			dif_pulse_l = 65535 * pulse_sum_l + pulse_pre_l - pulse_l;
 			pulse_sum_l = 0;
 		}else {
-			dif_pulse_l = pulse_l - pulse_pre_l;	//‚Â‚¤‚¶‚å‚¤‚Ìƒpƒ‹ƒX•Ï‰»
+			dif_pulse_l = pulse_l - pulse_pre_l;	//é€šå¸¸å‡¦ç†
 			pulse_sum_l = 0;
 		}
 
@@ -238,9 +235,9 @@ void Cmt1IntFunc(void){
 		pulse_pre_l = pulse_l;
 		
 		break;
-		//----§Œäˆ—----
+		//----åˆ¶å¾¡è¨ˆç®—----
 	case 3:			
-		vel_R = xR  / 4;	//4msŠÔ‚ÌƒGƒ“ƒR[ƒ_’l‚Ì•Ï‰»[mm]@Ë@‘¬“x[m/s]
+		vel_R = xR  / 4;	//è·é›¢[mm]ã‚’æ™‚é–“ã§é™¤ã—ã¦ã«ç›´ã™[m/s]
 		vel_L = xL  / 4;
 		
 		test_valR[time/4] = vel_R;
@@ -251,7 +248,7 @@ void Cmt1IntFunc(void){
 		test_valL1[time/4] = pulse_l;
 		test_valL2[time/4] = dif_pulse_l;
 */		
-		//‘¬“xPID§Œä
+		//PIDã—ã¦ã¿ã‚‹ï¼Ÿ
 		dif_vel_R = targ_vel_R - vel_R;
 		kpvR = KPR * dif_vel_R;
 		kpdR = KDR * (dif_vel_R - dif_pre_vel_R);
@@ -267,30 +264,30 @@ void Cmt1IntFunc(void){
 		
 		
 		
-		//§Œäƒtƒ‰ƒO‚ª‚ ‚ê‚Î§Œä
+		//å£åˆ¶å¾¡ãƒ•ãƒ©ã‚°ã‚¢ãƒªã®å ´åˆ
 		if(MF.FLAG.CTRL){
-			//Šî€’l‚©‚ç‚Ì·‚ğŒ©‚é
+			//å·®ã‚’ã¨ã‚‹
 			dif_l = (int16_t)(ad_l - base_l);
 			dif_r = (int16_t)(ad_r - base_r);
 
-			//§Œä‚Ì”»’f
+			//åˆ¶å¾¡ç¯„å›²ã¨ã®æ¯”è¼ƒ
 			if((SREF_MIN_L < dif_l) && (dif_l < SREF_MAX_L))
-				sen_dl = CONT * dif_l;	//”ä—á§Œä’l‚ğŒˆ’è
+				sen_dl = CONT * dif_l;	//ã‚²ã‚¤ãƒ³ã¨ã®ç©ã‚’å‡ºã™
 			else
-				sen_dl = 0;	//Šî€‚©‚çŠO‚ê‚Ä‚¢‚ê‚Î§Œä‚Í‚©‚¯‚È‚¢
+				sen_dl = 0;	//ç¯„å›²å¤–ãªã‚‰ï¼ã«
 			if((SREF_MIN_R < dif_r) && (dif_r < SREF_MAX_R))
 				sen_dr = CONT * dif_r;
 			else
 				sen_dr = 0;
 
 		}else{
-			//§Œäƒtƒ‰ƒO‚ª‚È‚¯‚ê‚Î§Œä’l0
+			//ãã‚‚ãã‚‚ãƒ•ãƒ©ã‚°ç„¡
 			sen_dl = sen_dr = 0;
 		}
 		break;
 	}
 
-	//====ƒ^ƒXƒNƒ|ƒCƒ“ƒ^‚ği‚ß‚é====
+	//====ã‚¿ã‚¹ã‚¯ãƒã‚¤ãƒ³ã‚¿ã§åˆ†å‰²å‡¦ç†====
 	tp = (tp+1) % 4;
 
 }

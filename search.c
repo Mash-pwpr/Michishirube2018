@@ -1,133 +1,133 @@
-/*
+﻿/*
 ==============================================================
  Name        : search.c
- Copyright   : Copyright (C) ����c��w�}�C�N���}�E�X�N���u
- Description : �T���p�֐��ł��D
+ Copyright   : Copyright (C) 早稲田大学マイクロマウスクラブ
+ Description : 探索用関数です．
 
-  �X�V����
- 2015/12/19		�R��@�R�����g�ǉ�
+  更新履歴
+ 2015/12/19		山上　コメント追加
 ==============================================================
 */
 
-/*�w�b�_�t�@�C���̓ǂݍ���*/
+/*ヘッダファイルの読み込み*/
 #include "global.h"
 
 /*===========================================================
-		�T���n�֐�
+		探索系関数
 ===========================================================*/
 /*-----------------------------------------------------------
-		�����@�T�����s��(���摖�s)
+		足立法探索走行α(一区画走行)
 -----------------------------------------------------------*/
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //searchA
-//	goal���W�ɐi��
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	goal座標に進む
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
-void searchA(){												//�ꎟ���s�@��Ԋ�{�I�ȏ�������
+void searchA(){												//一次走行　一番基本的な初期装備
 
-	//====�}�b�v�f�[�^������====
-	map_Init();												//�}�b�v�f�[�^������������
+	//====マップデータ初期化====
+	map_Init();												//マップデータを初期化する
 
-	//====������������====
-	m_step = r_cnt = 0;										//�����ƌo�H�J�E���^�̏�����
-	get_wall_info();										//�Ǐ��̏�����, ��ǂ͂Ȃ��Ȃ�
-	write_map();											//�n�}�̏�����
-	make_smap();											//�����}�̏�����
-	make_route();											//�ŒZ�o�H�T��(route�z��ɓ��삪�i�[�����)
+	//====歩数等初期化====
+	m_step = r_cnt = 0;										//歩数と経路カウンタの初期化
+	get_wall_info();										//壁情報の初期化, 後壁はなくなる
+	write_map();											//地図の初期化
+	make_smap();											//歩数図の初期化
+	make_route();											//最短経路探索(route配列に動作が格納される)
 
-	//====�T�����s====
+	//====探索走行====
 	do{
-		//----�i�s----
-		switch(route[r_cnt++]){								//route�z��ɂ���Đi�s������B�o�H�J�E���^��i�߂�
-			//----�O�i----
+		//----進行----
+		switch(route[r_cnt++]){								//route配列によって進行を決定。経路カウンタを進める
+			//----前進----
 			case 0x88:
 				break;
-			//----�E��----
+			//----右折----
 			case 0x44:
-				turn_R90();									//�E��]
-				turn_dir(DIR_TURN_R90);						//�}�C�N���}�E�X�����ʒu���ł��E��]����
-				Wait;										//���肷��܂őҋ@
+				turn_R90();									//右回転
+				turn_dir(DIR_TURN_R90);						//マイクロマウス内部位置情報でも右回転処理
+				Wait;										//安定するまで待機
 				break;
-			//----180��]----
+			//----180回転----
 			case 0x22:
-				turn_180();									//180�x��]
-				turn_dir(DIR_TURN_180);						//�}�C�N���}�E�X�����ʒu���ł�180�x��]����
-				Wait;										//���肷��܂őҋ@
+				turn_180();									//180度回転
+				turn_dir(DIR_TURN_180);						//マイクロマウス内部位置情報でも180度回転処理
+				Wait;										//安定するまで待機
 				break;
-			//----����----
+			//----左折----
 			case 0x11:
-				turn_L90();									//����]
-				turn_dir(DIR_TURN_L90);						//�}�C�N���}�E�X�����ʒu���ł�����]����
-				Wait;										//���肷��܂őҋ@
+				turn_L90();									//左回転
+				turn_dir(DIR_TURN_L90);						//マイクロマウス内部位置情報でも左回転処理
+				Wait;										//安定するまで待機
 				break;
 		}
 
-		a_section();										//�O�i����
-		adv_pos();											//�}�C�N���}�E�X�����ʒu���ł��O�i����
-		conf_route();										//�ŒZ�o�H�Ői�s�\������
+		a_section();										//前進する
+		adv_pos();											//マイクロマウス内部位置情報でも前進処理
+		conf_route();										//最短経路で進行可能か判定
 
 	}while((PRELOC.AXIS.X != goal_x) || (PRELOC.AXIS.Y != goal_y));
-															//���ݍ��W��goal���W���������Ȃ�܂Ŏ��s
+															//現在座標とgoal座標が等しくなるまで実行
 
-	ms_wait(2000);											//�X�^�[�g�ł�***2�b�ȏ�***��~���Ȃ��Ă͂Ȃ�Ȃ�
-	turn_180();												//180�x��]
-	turn_dir(DIR_TURN_180);									//�}�C�N���}�E�X�����ʒu���ł�180�x��]����
+	ms_wait(2000);											//スタートでは***2秒以上***停止しなくてはならない
+	turn_180();												//180度回転
+	turn_dir(DIR_TURN_180);									//マイクロマウス内部位置情報でも180度回転処理
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //searchSA
-//	������Ƒ���goal���W�ɐi��
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	ちょっと早くgoal座標に進む
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
-void searchSA(){											//�A�����s�̖������A���S���Y���A����������΃P�b�R�[�������s���ł���A�������͒����ĂȂ����炪��΂��ā@�W
+void searchSA(){											//連続走行の未完成アルゴリズム、完成させればケッコー早い走行ができる、初期化は直してないからがんばって　標
 
-	//====������������====
-	m_step = r_cnt = 0;										//�����ƌo�H�J�E���^�̏�����
-	get_wall_info();										//�Ǐ��̏�����, ��ǂ͂Ȃ��Ȃ�
-	write_map();											//�n�}�̏�����
-	make_smap();											//�����}�̏�����
-	make_route();											//�ŒZ�o�H�T��(route�z��ɓ��삪�i�[�����)
+	//====歩数等初期化====
+	m_step = r_cnt = 0;										//歩数と経路カウンタの初期化
+	get_wall_info();										//壁情報の初期化, 後壁はなくなる
+	write_map();											//地図の初期化
+	make_smap();											//歩数図の初期化
+	make_route();											//最短経路探索(route配列に動作が格納される)
 
 	half_sectionA();
 	adv_pos();
 	conf_route();
-	//====�T�����s====
+	//====探索走行====
 	do{
-		//----�i�s----
-		switch(route[r_cnt++]){								//route�z��ɂ���Đi�s������B�o�H�J�E���^��i�߂�
-			//----�O�i----
+		//----進行----
+		switch(route[r_cnt++]){								//route配列によって進行を決定。経路カウンタを進める
+			//----前進----
 			case 0x88:
-				s_section();                                //���̃v���O�����ɂ͖����֐��A���̃v���O�����Ɣ�ׂėގ��̊֐���T���ăs�b�^���Ȃ̂����@�W
+				s_section();                                //このプログラムには無い関数、他のプログラムと比べて類似の関数を探してピッタリなのを作れ　標
 				break;
-			//----�E��----
+			//----右折----
 			case 0x44:
 				half_sectionD();
 				turn_R90();
 				turn_dir(DIR_TURN_R90);
 
-				half_sectionA();									//�����Ŏ��͈ꕶ���������Ă��܂��A����΂��ā@�W
+				half_sectionA();									//ここで実は一文だけ抜けています、がんばって　標
 
 				get_wall_info();
 				break;
-			//----180��]----
+			//----180回転----
 			case 0x22:
 				half_sectionD();
 				turn_180();
 				turn_dir(DIR_TURN_180);
 
-				half_sectionA();									//�����ł��ꕶ���������Ă��܂��A���点�Ă݂�Ə�肭�����Ȃ��̂͂��̕ӂ̂����A�@�W
+				half_sectionA();									//ここでも一文だけ抜けています、走らせてみると上手くいかないのはこの辺のせい、　標
 
 				break;
-			//----����----
+			//----左折----
 			case 0x11:
 				half_sectionD();
 				turn_L90();
 				turn_dir(DIR_TURN_L90);
 
-				half_sectionA();										//�z��ʂ�A�����ł����������Ă܂��A����΂���  �W
+				half_sectionA();										//想定通り、ここでも何か抜けてます、がんばって  標
 
 				get_wall_info();
 				break;
@@ -145,24 +145,24 @@ void searchSA(){											//�A�����s�̖������A���S���Y���A����������΃P�b�R�[�
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //adv_pos
-//	�}�C�N���}�E�X�����ʒu���őO�i������
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	マイクロマウス内部位置情報で前進させる
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void adv_pos()
 {
-	switch(m_dir){											//�}�C�N���}�E�X�����݌����Ă�������Ŕ���
-	case 0x00:												//�k�����Ɍ����Ă���ꍇ
-		(PRELOC.AXIS.Y)++;									//Y���W���C���N�������g
+	switch(m_dir){											//マイクロマウスが現在向いている方向で判定
+	case 0x00:												//北方向に向いている場合
+		(PRELOC.AXIS.Y)++;									//Y座標をインクリメント
 		break;
-	case 0x01:												//�������Ɍ����Ă���ꍇ
-		(PRELOC.AXIS.X)++;									//X���W���C���N�������g
+	case 0x01:												//東方向に向いている場合
+		(PRELOC.AXIS.X)++;									//X座標をインクリメント
 		break;
-	case 0x02:												//������Ɍ����Ă���ꍇ
-		(PRELOC.AXIS.Y)--;									//Y���W���f�N�������g
+	case 0x02:												//南方向に向いている場合
+		(PRELOC.AXIS.Y)--;									//Y座標をデクリメント
 		break;
-	case 0x03:												//�������Ɍ����Ă���ꍇ
-		(PRELOC.AXIS.X)--;									//X���W���f�N�������g
+	case 0x03:												//西方向に向いている場合
+		(PRELOC.AXIS.X)--;									//X座標をデクリメント
 		break;
 	}
 }
@@ -170,103 +170,103 @@ void adv_pos()
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //conf_route
-//	�i�H�𔻒肷��
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	進路を判定する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void conf_route()
 {
-	//----�Ǐ�񏑂�����----
+	//----壁情報書き込み----
 	write_map();
 
-	//----�ŒZ�o�H��ɕǂ�����ΐi�H�ύX----
+	//----最短経路上に壁があれば進路変更----
 	if(wall_info & route[r_cnt]){
-		make_smap();										//�����}�b�v���X�V
-		make_route();										//�ŒZ�o�H���X�V
-		r_cnt = 0;											//�o�H�J�E���^��0��
+		make_smap();										//歩数マップを更新
+		make_route();										//最短経路を更新
+		r_cnt = 0;											//経路カウンタを0に
 	}
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //map_Init
-//	�}�b�v�i�[�z��map[][]�̏�����������
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	マップ格納配列map[][]の初期化をする
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void map_Init()
 {
-	//====�ϐ��錾====
-	unsigned char x, y;												//for���p�ϐ�
+	//====変数宣言====
+	unsigned char x, y;												//for文用変数
 
-	//====�������J�n====
-	//�}�b�v�̃N���A
-	for(y = 0; y <= 0x0f; y++){								//�eY���W�Ŏ��s
-		for(x = 0; x <= 0x0f; x++){							//�eX���W�Ŏ��s
-			map[y][x] = 0xf0;								//���(2�����s��)��ǂ���A����(1�����s��)��ǂȂ��Ƃ���B
+	//====初期化開始====
+	//マップのクリア
+	for(y = 0; y <= 0x0f; y++){								//各Y座標で実行
+		for(x = 0; x <= 0x0f; x++){							//各X座標で実行
+			map[y][x] = 0xf0;								//上位(2次走行時)を壁あり、下位(1次走行時)を壁なしとする。
 		}
 	}
 
-	//�m��ǂ̔z�u
-	for(y = 0; y <= 0x0f; y++){								//�eY���W�Ŏ��s
-		map[y][0] |= 0xf1;									//�Ő��ɕǂ�z�u
-		map[y][15] |= 0xf4;									//�œ��ɕǂ�z�u
+	//確定壁の配置
+	for(y = 0; y <= 0x0f; y++){								//各Y座標で実行
+		map[y][0] |= 0xf1;									//最西に壁を配置
+		map[y][15] |= 0xf4;									//最東に壁を配置
 	}
-	for(x = 0; x <= 0x0f; x++){								//�eX���W�Ŏ��s
-		map[0][x] |= 0xf2;									//�œ�ɕǂ�z�u
-		map[15][x] |= 0xf8;									//�Ŗk�ɕǂ�z�u
+	for(x = 0; x <= 0x0f; x++){								//各X座標で実行
+		map[0][x] |= 0xf2;									//最南に壁を配置
+		map[15][x] |= 0xf8;									//最北に壁を配置
 	}
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //write_map
-//	�}�b�v�f�[�^����������
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	マップデータを書き込む
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void write_map()
 {
-	//====�ϐ��錾====
-	unsigned char m_temp;											//������␳�����Ǐ��
+	//====変数宣言====
+	unsigned char m_temp;											//向きを補正した壁情報
 
-	//====�Ǐ��̕␳�i�[====
-	m_temp = (wall_info >> m_dir) & 0x0f;					//�Z���T�Ǐ���m_dir�Ō�����␳�����ĉ���4bit�����c��
-	m_temp |= (m_temp << 4);								//���4bit�ɉ���4bit���R�s�[�B���̍�Ƃ�m_temp��NESW���ŕǂ��i�[
+	//====壁情報の補正格納====
+	m_temp = (wall_info >> m_dir) & 0x0f;					//センサ壁情報をm_dirで向きを補正させて下位4bit分を残す
+	m_temp |= (m_temp << 4);								//上位4bitに下位4bitをコピー。この作業でm_tempにNESW順で壁が格納
 
-	//====�f�[�^�̏�������====
-	map[PRELOC.AXIS.Y][PRELOC.AXIS.X] = m_temp; 			//���ݒn�ɏ�������
-	//----���ӂɏ�������----
-	//�k���ɂ���
-	if(PRELOC.AXIS.Y != 15){								//���ݍŖk�[�łȂ��Ƃ�
-		if(m_temp & 0x88){									//�k�ǂ�����ꍇ
-			map[PRELOC.AXIS.Y + 1][PRELOC.AXIS.X] |= 0x22;	//�k���̋�悩�猩�ē�ǂ������������
-		}else{												//�k�ǂ��Ȃ��ꍇ
-			map[PRELOC.AXIS.Y + 1][PRELOC.AXIS.X] &= 0xDD;	//�k���̋�悩�猩�ē�ǂȂ�����������
+	//====データの書き込み====
+	map[PRELOC.AXIS.Y][PRELOC.AXIS.X] = m_temp; 			//現在地に書き込み
+	//----周辺に書き込む----
+	//北側について
+	if(PRELOC.AXIS.Y != 15){								//現在最北端でないとき
+		if(m_temp & 0x88){									//北壁がある場合
+			map[PRELOC.AXIS.Y + 1][PRELOC.AXIS.X] |= 0x22;	//北側の区画から見て南壁ありを書き込む
+		}else{												//北壁がない場合
+			map[PRELOC.AXIS.Y + 1][PRELOC.AXIS.X] &= 0xDD;	//北側の区画から見て南壁なしを書き込む
 		}
 	}
-	//�����ɂ���
-	if(PRELOC.AXIS.X != 15){								//���ݍœ��[�łȂ��Ƃ�
-		if(m_temp & 0x44){									//���ǂ�����ꍇ
-			map[PRELOC.AXIS.Y][PRELOC.AXIS.X + 1] |= 0x11;	//�����̋�悩�猩�Đ��ǂ������������
-		}else{												//�k�ǂ��Ȃ��ꍇ
-			map[PRELOC.AXIS.Y][PRELOC.AXIS.X + 1] &= 0xEE;	//�����̋�悩�猩�Đ��ǂȂ�����������
+	//東側について
+	if(PRELOC.AXIS.X != 15){								//現在最東端でないとき
+		if(m_temp & 0x44){									//東壁がある場合
+			map[PRELOC.AXIS.Y][PRELOC.AXIS.X + 1] |= 0x11;	//東側の区画から見て西壁ありを書き込む
+		}else{												//北壁がない場合
+			map[PRELOC.AXIS.Y][PRELOC.AXIS.X + 1] &= 0xEE;	//東側の区画から見て西壁なしを書き込む
 		}
 	}
-	//��ǂɂ���
-	if(PRELOC.AXIS.Y != 0){									//���ݍœ�[�łȂ��Ƃ�
-		if(m_temp & 0x22){									//��ǂ�����ꍇ
-			map[PRELOC.AXIS.Y - 1][PRELOC.AXIS.X] |= 0x88;	//�쑤�̋�悩�猩�Ėk�ǂ������������
-		}else{												//��ǂ��Ȃ��ꍇ
-			map[PRELOC.AXIS.Y - 1][PRELOC.AXIS.X] &= 0x77;	//�쑤�̋�悩�猩�Ėk�ǂȂ�����������
+	//南壁について
+	if(PRELOC.AXIS.Y != 0){									//現在最南端でないとき
+		if(m_temp & 0x22){									//南壁がある場合
+			map[PRELOC.AXIS.Y - 1][PRELOC.AXIS.X] |= 0x88;	//南側の区画から見て北壁ありを書き込む
+		}else{												//南壁がない場合
+			map[PRELOC.AXIS.Y - 1][PRELOC.AXIS.X] &= 0x77;	//南側の区画から見て北壁なしを書き込む
 		}
 	}
-	//�����ɂ���
-	if(PRELOC.AXIS.X != 0){									//���ݍŐ��[�łȂ��Ƃ�
-		if(m_temp & 0x11){									//���ǂ�����ꍇ
-			map[PRELOC.AXIS.Y][PRELOC.AXIS.X - 1] |= 0x44;	//�����̋�悩�猩�ē��ǂ������������
-		}else{												//���ǂ��Ȃ��ꍇ
-			map[PRELOC.AXIS.Y][PRELOC.AXIS.X - 1] &= 0xBB;	//�����̋�悩�猩�ē����Ȃ�����������
+	//西側について
+	if(PRELOC.AXIS.X != 0){									//現在最西端でないとき
+		if(m_temp & 0x11){									//西壁がある場合
+			map[PRELOC.AXIS.Y][PRELOC.AXIS.X - 1] |= 0x44;	//西側の区画から見て東壁ありを書き込む
+		}else{												//西壁がない場合
+			map[PRELOC.AXIS.Y][PRELOC.AXIS.X - 1] &= 0xBB;	//西側の区画から見て東側なしを書き込む
 		}
 	}
 }
@@ -274,167 +274,167 @@ void write_map()
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //write_map
-//	�}�E�X�̕�����ύX����
-// ����1�Ft_pat�E�E�E��]����(drive.h�Ń}�N����`)
-// �߂�l�F�Ȃ�
+//	マウスの方向を変更する
+// 引数1：t_pat・・・回転方向(drive.hでマクロ定義)
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void turn_dir(unsigned char	t_pat)
 {
-	//====������ύX====
-	m_dir = (m_dir + t_pat) & 0x03;							//�w�肳�ꂽ��m_dir����]������
+	//====方向を変更====
+	m_dir = (m_dir + t_pat) & 0x03;							//指定された分m_dirを回転させる
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //make_smap
-//	�����}�b�v���쐬����
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	歩数マップを作成する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void make_smap()
 {
-	//====�ϐ��錾====
-	unsigned char x, y;												//for���p�ϐ�
-	unsigned char m_temp;											//�}�b�v�f�[�^�ꎞ�ێ�
+	//====変数宣言====
+	unsigned char x, y;												//for文用変数
+	unsigned char m_temp;											//マップデータ一時保持
 
-	//====�����}�b�v�̃N���A====
-	for(y = 0; y <= 0x0f; y++){								//�eY���W�Ŏ��s
-		for( x = 0; x <= 0x0f; x++){						//�eX���W�Ŏ��s
-			smap[y][x] = 0xff;								//���L�������͕����ő�Ƃ���
+	//====歩数マップのクリア====
+	for(y = 0; y <= 0x0f; y++){								//各Y座標で実行
+		for( x = 0; x <= 0x0f; x++){						//各X座標で実行
+			smap[y][x] = 0xff;								//未記入部分は歩数最大とする
 		}
 	}
 
-	//====�S�[�����W��0�ɂ���====
+	//====ゴール座標を0にする====
 	smap[goal_y][goal_x] = 0;
 
-	//====�����J�E���^��0�ɂ���====
-	m_step = 0;												//���݋L�������ő�̕����ƂȂ�
+	//====歩数カウンタを0にする====
+	m_step = 0;												//現在記入した最大の歩数となる
 
-	//====�����̍��W�ɂ��ǂ蒅���܂Ń��[�v====
+	//====自分の座標にたどり着くまでループ====
 	do{
-		//----�}�b�v�S���{��----
-		for( y = 0; y <= 0x0f; y++){						//�eY���W�Ŏ��s
-			for( x = 0; x <= 0x0f; x++){					//�eX���W�Ŏ��s
-				//----���ݍő�̕����𔭌������Ƃ�----
-				if( smap[y][x] == m_step){					//�����i�[�ϐ�m_step�̒l�����ݍő�̕���
-					m_temp = map[y][x];						//map�z�񂩂�}�b�v�f�[�^�����o��
-					if(MF.FLAG.SCND){						//�񎟑��s�p�̃}�b�v���쐬����ꍇ(�񎟑��s����MF.FLAG.SCND��True�ɂ���)
-						m_temp >>= 4;						//���4bit���g���̂�4bit���E�ɃV�t�g������
+		//----マップ全域を捜索----
+		for( y = 0; y <= 0x0f; y++){						//各Y座標で実行
+			for( x = 0; x <= 0x0f; x++){					//各X座標で実行
+				//----現在最大の歩数を発見したとき----
+				if( smap[y][x] == m_step){					//歩数格納変数m_stepの値が現在最大の歩数
+					m_temp = map[y][x];						//map配列からマップデータを取り出す
+					if(MF.FLAG.SCND){						//二次走行用のマップを作成する場合(二次走行時はMF.FLAG.SCNDをTrueにする)
+						m_temp >>= 4;						//上位4bitを使うので4bit分右にシフトさせる
 					}
-					//----�k�ǂɂ��Ă̏���----
-					if(!(m_temp & 0x08) && y != 0x0f){		//�k�ǂ��Ȃ����ݍŖk�[�łȂ��Ƃ�
-						if(smap[y+1][x] == 0xff){			//�k�������L���Ȃ�
-							smap[y+1][x] = m_step + 1;		//���̕�������������
+					//----北壁についての処理----
+					if(!(m_temp & 0x08) && y != 0x0f){		//北壁がなく現在最北端でないとき
+						if(smap[y+1][x] == 0xff){			//北側が未記入なら
+							smap[y+1][x] = m_step + 1;		//次の歩数を書き込む
 						}
 					}
-					//----���ǂɂ��Ă̏���----
-					if(!(m_temp & 0x04) && x != 0x0f){		//���ǂ��Ȃ����ݍœ��[�łȂ��Ƃ�
-						if(smap[y][x+1] == 0xff){			//���������L���Ȃ�
-							smap[y][x+1] = m_step + 1;		//���̕�������������
+					//----東壁についての処理----
+					if(!(m_temp & 0x04) && x != 0x0f){		//東壁がなく現在最東端でないとき
+						if(smap[y][x+1] == 0xff){			//東側が未記入なら
+							smap[y][x+1] = m_step + 1;		//次の歩数を書き込む
 						}
 					}
-					//----��ǂɂ��Ă̏���----
-					if(!(m_temp & 0x02) && y != 0){			//��ǂ��Ȃ����ݍœ�[�łȂ��Ƃ�
-						if(smap[y-1][x] == 0xff){			//�쑤�����L���Ȃ�
-							smap[y-1][x] = m_step + 1;		//���̕�������������
+					//----南壁についての処理----
+					if(!(m_temp & 0x02) && y != 0){			//南壁がなく現在最南端でないとき
+						if(smap[y-1][x] == 0xff){			//南側が未記入なら
+							smap[y-1][x] = m_step + 1;		//次の歩数を書き込む
 						}
 					}
-					//----���ǂɂ��Ă̏���----
-					if(!(m_temp & 0x01) && x != 0){			//���ǂ��Ȃ����ݍŐ��[�łȂ��Ƃ�
-						if(smap[y][x-1] == 0xff){			//���������L���Ȃ�
-							smap[y][x-1] = m_step + 1;		//���̕�������������
+					//----西壁についての処理----
+					if(!(m_temp & 0x01) && x != 0){			//西壁がなく現在最西端でないとき
+						if(smap[y][x-1] == 0xff){			//西側が未記入なら
+							smap[y][x-1] = m_step + 1;		//次の歩数を書き込む
 						}
 					}
 				}
 			}
 		}
-		//====�����J�E���^�̃C���N�������g====
+		//====歩数カウンタのインクリメント====
 		m_step++;
-	}while(smap[PRELOC.AXIS.Y][PRELOC.AXIS.X] == 0xff);		//���ݍ��W�����L���ł͂Ȃ��Ȃ�܂Ŏ��s
+	}while(smap[PRELOC.AXIS.Y][PRELOC.AXIS.X] == 0xff);		//現在座標が未記入ではなくなるまで実行
 }
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //make_route
-//	�ŒZ�o�H�𓱏o����
-// �����F�Ȃ�
-// �߂�l�F�Ȃ�
+//	最短経路を導出する
+// 引数：なし
+// 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void make_route()
 {
-	//====�ϐ��錾====
-	unsigned char i = 0;												//�J�E���^
-	unsigned char x, y;													//X�AY���W
-	unsigned char dir_temp =  m_dir;									//�����̕ۊǗp�ϐ�
-	unsigned char m_temp;												//�}�b�v�f�[�^�ꎞ�ێ�
+	//====変数宣言====
+	unsigned char i = 0;												//カウンタ
+	unsigned char x, y;													//X、Y座標
+	unsigned char dir_temp =  m_dir;									//方向の保管用変数
+	unsigned char m_temp;												//マップデータ一時保持
 
-	//====�ŒZ�o�H��������====
+	//====最短経路を初期化====
 	do{
-		route[i++] = 0xff;										//route���������Ai���C���N�������g
-	}while(i != 0);												//i��0�łȂ��Ԏ��s(i���I�[�o�[�t���[����0�ɂȂ�܂Ŏ��s�H)
+		route[i++] = 0xff;										//routeを初期化、iをインクリメント
+	}while(i != 0);												//iが0でない間実行(iがオーバーフローして0になるまで実行？)
 
-	//====�����J�E���^���Z�b�g====
-	m_step = smap[PRELOC.AXIS.Y][PRELOC.AXIS.X];				//���ݍ��W�̕����}�b�v�l���擾
+	//====歩数カウンタをセット====
+	m_step = smap[PRELOC.AXIS.Y][PRELOC.AXIS.X];				//現在座標の歩数マップ値を取得
 
-	//====x, y�Ɍ��ݍ��W����������====
+	//====x, yに現在座標を書き込み====
 	x = (unsigned char)PRELOC.AXIS.X;
 	y = (unsigned char)PRELOC.AXIS.Y;
 
-	//====�ŒZ�o�H�𓱏o====
+	//====最短経路を導出====
 	do{
-		m_temp = map[y][x];										//��r�p�}�b�v���̊i�[
-		if(MF.FLAG.SCND){										//�񎟑��s�p�̃}�b�v���쐬����ꍇ(�񎟑��s����MF.FLAG.SCND��True�ɂ���)
-			m_temp >>= 4;										//���4bit���g���̂�4bit���E�ɃV�t�g������
+		m_temp = map[y][x];										//比較用マップ情報の格納
+		if(MF.FLAG.SCND){										//二次走行用のマップを作成する場合(二次走行時はMF.FLAG.SCNDをTrueにする)
+			m_temp >>= 4;										//上位4bitを使うので4bit分右にシフトさせる
 		}
 
-		//----�k������----
-		if(!(m_temp & 0x08) && (smap[y+1][x] < m_step)){		//�k���ɕǂ������A���ݒn��菬���������}�b�v�l�ł����
-			route[i] = (0x00 - m_dir) & 0x03;					//route�z��ɐi�s�������L�^
-			m_step = smap[y+1][x];								//�ő�����}�b�v�l���X�V
-			y++;												//�k�ɐi�񂾂̂�Y���W���C���N�������g
+		//----北を見る----
+		if(!(m_temp & 0x08) && (smap[y+1][x] < m_step)){		//北側に壁が無く、現在地より小さい歩数マップ値であれば
+			route[i] = (0x00 - m_dir) & 0x03;					//route配列に進行方向を記録
+			m_step = smap[y+1][x];								//最大歩数マップ値を更新
+			y++;												//北に進んだのでY座標をインクリメント
 		}
-		//----��������----
-		else if(!(m_temp & 0x04) && (smap[y][x+1] < m_step)){	//�����ɕǂ������A���ݒn��菬���������}�b�v�l�ł����
-			route[i] = (0x01 - m_dir) & 0x03;					//route�z��ɐi�s�������L�^
-			m_step = smap[y][x+1];								//�ő�����}�b�v�l���X�V
-			x++;												//���ɐi�񂾂̂�X���W���C���N�������g
+		//----東を見る----
+		else if(!(m_temp & 0x04) && (smap[y][x+1] < m_step)){	//東側に壁が無く、現在地より小さい歩数マップ値であれば
+			route[i] = (0x01 - m_dir) & 0x03;					//route配列に進行方向を記録
+			m_step = smap[y][x+1];								//最大歩数マップ値を更新
+			x++;												//東に進んだのでX座標をインクリメント
 		}
-		//----�������----
-		else if(!(m_temp & 0x02) && (smap[y-1][x] < m_step)){	//�쑤�ɕǂ������A���ݒn��菬���������}�b�v�l�ł����
-			route[i] = (0x02 - m_dir) & 0x03;					//route�z��ɐi�s�������L�^
-			m_step = smap[y-1][x];								//�ő�����}�b�v�l���X�V
-			y--;												//��ɐi�񂾂̂�Y���W���f�N�������g
+		//----南を見る----
+		else if(!(m_temp & 0x02) && (smap[y-1][x] < m_step)){	//南側に壁が無く、現在地より小さい歩数マップ値であれば
+			route[i] = (0x02 - m_dir) & 0x03;					//route配列に進行方向を記録
+			m_step = smap[y-1][x];								//最大歩数マップ値を更新
+			y--;												//南に進んだのでY座標をデクリメント
 		}
-		//----��������----
-		else if(!(m_temp & 0x01) && (smap[y][x-1] < m_step)){	//�����ɕǂ������A���ݒn��菬���������}�b�v�l�ł����
-			route[i] = (0x03 - m_dir) & 0x03;					//route�z��ɐi�s�������L�^
-			m_step = smap[y][x-1];								//�ő�����}�b�v�l���X�V
-			x--;												//���ɐi�񂾂̂�X���W���f�N�������g
+		//----西を見る----
+		else if(!(m_temp & 0x01) && (smap[y][x-1] < m_step)){	//西側に壁が無く、現在地より小さい歩数マップ値であれば
+			route[i] = (0x03 - m_dir) & 0x03;					//route配列に進行方向を記録
+			m_step = smap[y][x-1];								//最大歩数マップ値を更新
+			x--;												//西に進んだのでX座標をデクリメント
 		}
 
-		//----�i�[�f�[�^�`���ύX----
-		switch(route[i]){										//route�z��Ɋi�[�����v�f�l�ŕ���
-		case 0x00:												//�O�i����ꍇ
-			route[i] = 0x88;									//�i�[�f�[�^�`����ύX
+		//----格納データ形式変更----
+		switch(route[i]){										//route配列に格納した要素値で分岐
+		case 0x00:												//前進する場合
+			route[i] = 0x88;									//格納データ形式を変更
 			break;
-		case 0x01:												//�E�܂���ꍇ
-			turn_dir(DIR_TURN_R90);								//�������̕�����90�x�E��]
-			route[i] = 0x44;									//�i�[�f�[�^�`����ύX
+		case 0x01:												//右折する場合
+			turn_dir(DIR_TURN_R90);								//内部情報の方向を90度右回転
+			route[i] = 0x44;									//格納データ形式を変更
 			break;
-		case 0x02:												//U�^�[������ꍇ
-			turn_dir(DIR_TURN_180);								//�������̕�����180�x��]
-			route[i] = 0x22;									//�i�[�f�[�^�`����ύX
+		case 0x02:												//Uターンする場合
+			turn_dir(DIR_TURN_180);								//内部情報の方向を180度回転
+			route[i] = 0x22;									//格納データ形式を変更
 			break;
-		case 0x03:												//���܂���ꍇ
-			turn_dir(DIR_TURN_L90);								//�������̕�����90�x�E��]
-			route[i] = 0x11;									//�i�[�f�[�^�`����ύX
+		case 0x03:												//左折する場合
+			turn_dir(DIR_TURN_L90);								//内部情報の方向を90度右回転
+			route[i] = 0x11;									//格納データ形式を変更
 			break;
-		default:												//����ȊO�̏ꍇ
-			route[i] = 0x00;									//�i�[�f�[�^�`����ύX
+		default:												//それ以外の場合
+			route[i] = 0x00;									//格納データ形式を変更
 			break;
 		}
-		i++;													//�J�E���^���C���N�������g
-	}while( smap[y][x] != 0);									//�i�񂾐�̕����}�b�v�l��0(=�S�[��)�ɂȂ�܂Ŏ��s
-	m_dir = dir_temp;											//�������n�߂̏�Ԃɖ߂�
+		i++;													//カウンタをインクリメント
+	}while( smap[y][x] != 0);									//進んだ先の歩数マップ値が0(=ゴール)になるまで実行
+	m_dir = dir_temp;											//方向を始めの状態に戻す
 }
 
