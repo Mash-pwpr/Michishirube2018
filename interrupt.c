@@ -258,8 +258,6 @@ void Cmt1IntFunc(void){
 		
 		dif_pre_vel_R = dif_vel_R;
 		
-		
-		
 		dif_vel_L = targ_vel_L - vel_L;
 		kpvL = KPL * dif_vel_L;
 		kpdL = KDL * (dif_vel_L - dif_pre_vel_L);
