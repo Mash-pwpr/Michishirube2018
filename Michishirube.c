@@ -1,0 +1,237 @@
+/************************************************************
+		Micromouse プログラム
+		2007年~2012年	H8/3694f版が運用される
+		2013/03/01		LPC向けに移植					長谷川 健人
+		2013/09/20		標準化のため色々弄る				高橋 有礼
+ ************************************************************/
+/*
+==============================================================
+ Name        : main.c
+ Copyright   : Copyright (C) 早稲田大学マイクロマウスクラブ
+ Description : main definition
+
+ 更新履歴
+ 2016/2/12　深山　一部コメント追加
+ 2017/6/27 標　連続探索走行の未完成版を実装
+==============================================================
+ */
+
+#define EXTERN
+#include "global.h"
+
+/*===========================================================
+		メイン関数
+===========================================================*/
+int main(void) {
+
+	//====変数宣言====
+	char mode = 0;
+	uint16_t i,j;
+	
+	
+	
+	//====初期化====
+	R_PG_Clock_Set();					//クロック設定
+
+	port_Init();						//portの初期化
+	val_Init();							//各種変数の初期化
+	timer_Init();						//タイマ系の初期化
+	sensor_Init();						//センサ系の初期化
+	uart_Init();					//シリアル通信の初期化	
+	
+	//timer_start();
+/*	while(1){
+		
+		for(i=10;i<60000;i+=10){
+			melody(i,100);
+		}
+		i = 0x75;
+		//R_PG_RSPI_TransferAllData_C0(&i,&test1,1);
+		//R_PG_RSPI_StartTransfer_C0(0x47,&test1,1);
+		//test_s = test1 + test2;
+		uart_printf("Who am I : \r\n");
+		uart_printf("0x%x\r\n",test1);
+		ms_wait(1000);
+		
+	}
+*/
+
+	duty_r = KR * Kvolt * accel_r / VOLT_BAT;
+	duty_l = KL * Kvolt * accel_l / VOLT_BAT;
+	i = (1 - duty_r) * 65535;
+	j = (1 - duty_l) * 65535;
+	
+	//uart_printf("R:%lf\tL%lf\ti:%d\tj:%d\r\n",duty_r,duty_l,i,j);
+	targ_vel_L = 1.0;
+	targ_vel_R = 1.0;
+		
+	
+			//while(1){
+				
+				set_dir(FORWARD);
+				sensor_start();
+				drive_start();
+				do{
+					
+				uart_printf("Rmm is %lf duty_r is %lf,duty_oR is %lf, vel_R is %lf\r\n",totalR_mm,duty_r, duty_oR,vel_R);
+				//ms_wait(10);
+					/*if(volt_bat < 3650 && 1000 < volt_bat){
+						melody(1320,2000);
+						R_PG_Timer_StopModule_MTU_U0();
+						R_PG_Timer_StopModule_CMT_U0();
+						while(1){
+						}
+					}*/
+				}while(vel_R < 1 );
+					
+				uart_printf("END\r\n");
+				ms_wait(100);
+				do{
+					targ_vel_L = 0;
+					targ_vel_R = 0;
+						
+				}while(vel_R > 0);
+			
+				drive_stop(1);
+				R_PG_Timer_HaltCount_CMT_U0_C1();
+				ms_wait(10000);				
+				
+			//}
+			if(volt_bat < 3650 && 1000 < volt_bat){
+				melody(1320,2000);
+				R_PG_Timer_StopModule_MTU_U0();
+				R_PG_Timer_StopModule_CMT_U0();
+				uart_printf("Voltage Out\r\n");
+				while(1){
+				}
+			}
+
+	while(1){ // Main Loop
+		uart_printf("Hello, World! Kvolt = %lf \r\n",Kvolt);	
+		//====モードセレクト====
+		select_mode(&mode);
+		ms_wait(100);
+		//----選択項目の実行----
+		switch(mode){
+		case 0:	//----基準値を取る----
+			get_base();											//get_base()はsensor.cに関数定義あり 　制御のための壁基準値取得
+			//----情報をシリアル送信----
+			//uart_printf("base_l = %3d, ", base_l);				//UART_printf()はuart.cに関数定義あり
+			//uart_printf("base_r = %3d\r", base_r);
+			ms_wait(500);
+			uart_printf("START");
+			for(i=0;i<300;i++){
+				uart_printf("%lf,%lf\r\n",test_valR[i],test_valL[i]);
+				ms_wait(100);
+			}
+			uart_printf("ALL");
+
+			break;
+		case 1:	//----一次探索走行----
+			goal_x = GOAL_X;									//ゴール座標を設定　　GOAL_Xはglobal.hにマクロ定義あり
+			goal_y = GOAL_Y;									//ゴール座標を設定　　GOAL_Yはglobal.hにマクロ定義あり
+
+			start_ready();
+			start_wait();
+
+			get_wall_info();									//壁情報の初期化     get_wall_info()はsensor.cに関数定義あり
+			searchA();											//ゴール区画まで探索，進行する　searchA()はsearch.cに関数定義あり
+			goal_x = goal_y = 0;								//ゴール座標をスタート区画に設定
+			Wait;												//待機
+			searchA();											//戻ってくる
+
+			goal_x = GOAL_X;									//ゴール座標設定
+			goal_y = GOAL_Y;									//ゴール座標設定
+
+			
+			break;
+
+			//----連続探索走行----
+		case 2:
+			goal_x = GOAL_X;
+			goal_y = GOAL_Y;
+
+			
+			start_ready();
+			start_wait();
+			
+			searchSA();
+			goal_x = goal_y = 0;
+			searchSA();
+			goal_x = GOAL_X;
+			goal_y = GOAL_Y;
+
+			turn_180();									//180度回転
+			turn_dir(DIR_TURN_180);
+			break;
+
+			/////////////////////////////////　　↓の二次探索走行とスラローム走行は未実装
+			//----二次高速走行----
+		case 3:
+		
+			
+			break;
+
+			//----スラローム走行----
+		case 4:
+			break;
+			//////////////////////////////////
+
+			//----走行テスト----
+		case 5:
+			Wait;
+			start_wait();
+			set_dir(FORWARD);
+			drive_start();
+			while(1){
+				uart_printf("Driving\r\n");
+			}
+			test_drive(&mode);									//test_drive()はdrive.cに関数定義あり
+			ms_wait(100);
+			break;
+			//----エンコーダテスト----
+		case 6:
+			Wait;
+			start_wait();
+			enc_test();
+			ms_wait(100);
+			break;
+			
+			
+			//----センサ値, 差を確認----
+			//LED点灯は要変更
+		default:
+			Wait;
+			val_Init();
+			MF.FLAG.CTRL = 1;	//制御許可
+			R_PG_Timer_StartCount_CMT_U0_C1();
+			while(1){
+				pins_write(DISP_LEDS, 0, LED_NUM);											//pins_write()はport.cに関数定義あり
+				uart_printf("ad_l: %4d ad_fl:%4d ad_ff:%4d  ad_fr:%4d ad_r:%4d ", ad_l, ad_fl, ad_ff, ad_fr, ad_r);
+				uart_printf(" | dif_l: %4d dif_r:%4d\r\n", dif_l, dif_r);
+				//----LEDが4つの場合----
+				if(ad_fr > WALL_BASE_F){
+					// ここ、ad_lになってましたよ！！
+					pin_write(DISP_LEDS[0], ON);											//pin_write()はport.cに関数定義あり
+				}
+				if(ad_r > WALL_BASE_R){
+					pin_write(DISP_LEDS[1], ON);
+				}
+				if(ad_l > WALL_BASE_L){
+					pin_write(DISP_LEDS[2], ON);
+				}
+				if(ad_fl > WALL_BASE_F){
+					pin_write(DISP_LEDS[3], ON);
+				}
+				ms_wait(1000);
+
+			}
+			MF.FLAG.CTRL = 0;
+			ms_wait(100);
+			break;
+		}
+		ms_wait(100);
+	}
+
+	return 0 ;
+}
