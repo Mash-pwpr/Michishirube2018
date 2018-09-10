@@ -60,6 +60,8 @@
         <Category Name="CMT">
           <Path>..\..\..\..\renesas\PDG2_proj\Michishirube\CMT\R_PG_Timer_CMT_U0.c</Path>
           <Path>..\..\..\..\renesas\PDG2_proj\Michishirube\CMT\R_PG_Timer_CMT_U0.h</Path>
+          <Path>..\..\..\..\Renesas\PDG2_proj\Michishirube\CMT\R_PG_Timer_CMT_U1.c</Path>
+          <Path>..\..\..\..\Renesas\PDG2_proj\Michishirube\CMT\R_PG_Timer_CMT_U1.h</Path>
         </Category>
         <Category Name="SCI">
           <Path>..\..\..\..\renesas\PDG2_proj\Michishirube\SCI\R_PG_SCI_C1.c</Path>
@@ -229,6 +231,7 @@
           <Path>DefaultBuild\R_PG_IO_PORT_P1.obj</Path>
           <Path>DefaultBuild\R_PG_IO_PORT_P3.obj</Path>
           <Path>DefaultBuild\R_PG_IO_PORT_P4.obj</Path>
+          <Path>DefaultBuild\R_PG_Timer_CMT_U1.obj</Path>
         </LinkOrder>
         <CommonOptions>
           <IncludePathForC>..\..\..\..\Renesas\PDG2_proj\Michishirube\RSPI</IncludePathForC>

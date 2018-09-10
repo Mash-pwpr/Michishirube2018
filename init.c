@@ -69,7 +69,9 @@ void val_Init(void){
 	totalR_pre_mm = totalL_pre_mm = 0;
 	totalR_mm = totalL_mm = 0;
 	dif_pre_vel_R = dif_pre_vel_L = 0;
-		
+	
+	kvpR = kvdR = kviR =  kvpL = kvdL = kviL = 0;
+	
 	accel_r = 0.5;
 	accel_l = 0.5;
 	
@@ -86,6 +88,7 @@ void val_Init(void){
 	m_dir = 0;				//マウス方向の初期化
 
 	Kvolt = MASS / 2 * DIA_SQUR_mm / DIA_PINI_mm * DIA_WHEEL_mm / Ktolk * Rmotor;
+	Kxr =  -DIA_WHEEL_mm * (DIA_PINI_mm / DIA_SQUR_mm) * 2 * Pi / 4096;
 	
 }
 
@@ -94,6 +97,7 @@ void timer_Init(void){
 
 	R_PG_Timer_Set_CMT_U0_C0();
 	R_PG_Timer_Set_CMT_U0_C1();
+	R_PG_Timer_Set_CMT_U1_C2();
 
 	R_PG_Timer_Set_MTU_U0_C0();		//ブザー用初期設定
 	R_PG_Timer_Set_MTU_U0_C1();		//右エンコーダ

@@ -26,9 +26,7 @@ int main(void) {
 
 	//====変数宣言====
 	char mode = 0;
-	uint16_t i,j;
-	
-	
+	uint16_t i;
 	
 	//====初期化====
 	R_PG_Clock_Set();					//クロック設定
@@ -56,22 +54,42 @@ int main(void) {
 	}
 */
 
-	duty_r = KR * Kvolt * accel_r / VOLT_BAT;
-	duty_l = KL * Kvolt * accel_l / VOLT_BAT;
-	i = (1 - duty_r) * 65535;
-	j = (1 - duty_l) * 65535;
+//	duty_r = KR * Kvolt * accel_r / VOLT_BAT;
+//	duty_l = KL * Kvolt * accel_l / VOLT_BAT;
 	
 	//uart_printf("R:%lf\tL%lf\ti:%d\tj:%d\r\n",duty_r,duty_l,i,j);
+	ms_wait(100);
+	S12AD.ADANS0.WORD = 0x40;
+	R_PG_ADC_12_StartConversionSW_S12AD0();					
+	R_PG_ADC_12_GetResult_S12AD0(ad_res);
+	volt_bat = ad_res[6];
+	ms_wait(100);
+
+		if(volt_bat < 3000 && 1000 < volt_bat){
+				melody(1320,2000);
+				R_PG_Timer_StopModule_MTU_U0();
+				R_PG_Timer_StopModule_CMT_U0();
+				uart_printf("Voltage Out! volt is %d\r\n",volt_bat);
+				while(1){
+				}
+			}
+
 	targ_vel_L = 1.0;
 	targ_vel_R = 1.0;
+	offsetR_mm = 0.5 * targ_vel_R * OFFDT;
 		
-	
-			//while(1){
-				
-				set_dir(FORWARD);
-				sensor_start();
-				drive_start();
-				do{
+		
+		set_dir(FORWARD);
+		sensor_start();
+		drive_start();
+		//ms_wait(500);
+		while((totalR_mm - offsetR_mm) < 180){
+			
+		}
+		targ_vel_L = 0;
+		targ_vel_R = 0;
+		ms_wait(500);
+/*				do{
 					
 				uart_printf("Rmm is %lf duty_r is %lf,duty_oR is %lf, vel_R is %lf\r\n",totalR_mm,duty_r, duty_oR,vel_R);
 				//ms_wait(10);
@@ -81,7 +99,7 @@ int main(void) {
 						R_PG_Timer_StopModule_CMT_U0();
 						while(1){
 						}
-					}*/
+					}*
 				}while(vel_R < 1 );
 					
 				uart_printf("END\r\n");
@@ -92,22 +110,15 @@ int main(void) {
 						
 				}while(vel_R > 0);
 			
-				drive_stop(1);
+*/				drive_stop(1);
+				R_PG_Timer_HaltCount_CMT_U1_C2();
 				R_PG_Timer_HaltCount_CMT_U0_C1();
 				ms_wait(10000);				
 				
 			//}
-			if(volt_bat < 3650 && 1000 < volt_bat){
-				melody(1320,2000);
-				R_PG_Timer_StopModule_MTU_U0();
-				R_PG_Timer_StopModule_CMT_U0();
-				uart_printf("Voltage Out\r\n");
-				while(1){
-				}
-			}
 
 	while(1){ // Main Loop
-		uart_printf("Hello, World! Kvolt = %lf \r\n",Kvolt);	
+		uart_printf("Hello, World! Kvolt = %lf Kxr = %lf\r\n",Kvolt,Kxr);	
 		//====モードセレクト====
 		select_mode(&mode);
 		ms_wait(100);
@@ -119,10 +130,10 @@ int main(void) {
 			//uart_printf("base_l = %3d, ", base_l);				//UART_printf()はuart.cに関数定義あり
 			//uart_printf("base_r = %3d\r", base_r);
 			ms_wait(500);
-			uart_printf("START");
-			for(i=0;i<300;i++){
-				uart_printf("%lf,%lf\r\n",test_valR[i],test_valL[i]);
-				ms_wait(100);
+			uart_printf("START\r\n");
+			for(i=0;i<1000;i++){
+				uart_printf("%lf,%lf, %lf, %lf,%lf\r\n",test_valR[i],test_valR1[i] ,test_valL[i],test_valL1[i]);
+				ms_wait(10);
 			}
 			uart_printf("ALL");
 

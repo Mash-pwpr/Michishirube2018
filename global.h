@@ -65,13 +65,19 @@
 #define MASS 0.1
 #define VOLT_BAT 7.4
 #define KR 1
-#define KL 1.2
-//---PIDゲイン---
-#define KPR 0.1
-#define KPL 0.1
+#define KL 1
 
-#define KDR 0.01
-#define KDL 0.01
+#define OFFDT 0.2
+
+//---PIDゲイン---
+#define KPR 1.3
+#define KPL 1.3
+
+#define KDR 0.2
+#define KDL 0.2
+
+#define KIR 0
+#define KIL 0
 
 //----タイマ関連----
 #define DEFGRC 22000		//デフォルトのインターバル

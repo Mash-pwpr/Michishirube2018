@@ -39,6 +39,7 @@
 -input=DefaultBuild\R_PG_IO_PORT_P1.obj
 -input=DefaultBuild\R_PG_IO_PORT_P3.obj
 -input=DefaultBuild\R_PG_IO_PORT_P4.obj
+-input=DefaultBuild\R_PG_Timer_CMT_U1.obj
 -library=C:\Renesas\PDG2\lib\RX63N\RX63N_library_64_little.lib
 -noprelink
 -output=DefaultBuild\Michishirube.abs

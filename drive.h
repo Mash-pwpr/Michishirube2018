@@ -78,26 +78,28 @@
 	const uint16_t table[] = {
 		#include "table.h"
 	};								//table.hに貼り付けた値を保持する配列
-	volatile float vel_R, vel_L, xR, xL;
+	volatile float vel_R, vel_L, xR, xL;				//現在速度，距離変化
 	volatile float targ_vel_R,targ_vel_L;				//目標速度
-	volatile float dif_vel_R,dif_vel_L;
-	volatile float dif_pre_vel_R, dif_pre_vel_L;
-	volatile uint16_t kpvR,kpdR,kpvL,kpdL;
+	volatile float dif_vel_R,dif_vel_L;				//速度偏差
+	volatile float dif_pre_vel_R, dif_pre_vel_L;			//速度偏差
+	volatile float kvpR,kvdR,kviR,kvpL,kvdL,kviL;			//PID制御量
 	
 	volatile uint16_t t_cnt_l, t_cnt_r,time, ms_time;		//テーブルカウンタ
 	volatile uint16_t minindex, maxindex;				//最低速度・最大速度
 	volatile uint16_t interval_l, interval_r;			//左右インターバル
 	
-	volatile float duty_r,duty_l,Kvolt,duty_oR,duty_oL;
-	volatile float accel_r,accel_l;
-	volatile float test_valR[1000],test_valL[1000];
-	volatile uint16_t test_valR1[1000],test_valL1[1000],test_valR2[1000],test_valL2[1000]; 
+	volatile float duty_r,duty_l,duty_oR,duty_oL;			//Duty比計算と計算オーバー用のバッファ
+	volatile float Kvolt,Kxr;					//加速度えるための電流定数，距離変換のための定数
+	volatile float accel_r,accel_l;					//目標加速度？
+	volatile float test_valR[2000],test_valL[2000],test_valR1[2000],test_valL1[2000];			//速度ログなどの保存用配列
+	volatile uint16_t test_valR2[1000],test_valL2[1000]; 	//エンコーダ獲得値などの保存用配列
 	
 	
 	volatile uint16_t pulse_l, pulse_r, pulse_pre_r, pulse_pre_l;					//左右パルスカウント
-	volatile int32_t dif_pulse_r, dif_pulse_l,pulse_sum_l, pulse_sum_r;
-	float totalR_mm, totalL_mm,totalR_pre_mm,totalL_pre_mm;
-	int16_t	sen_dl, sen_dr;							//比例制御量
+	volatile int32_t dif_pulse_r, dif_pulse_l,pulse_sum_l, pulse_sum_r;				//エンコーダ変化値，オバフ用フラグ
+	volatile float totalR_mm, totalL_mm,totalR_pre_mm,totalL_pre_mm;						//走行距離[mm]など
+	volatile float offsetR_mm, offsetL_mm;
+	int16_t	sen_dl, sen_dr;										//壁センサによる比例制御量
 	
 	
 #else									//対応ファイルでEXTERNが定義されていない場合
@@ -105,22 +107,24 @@
 	extern const uint16_t table[];				
 	extern volatile float dif_pre_vel_R, dif_pre_vel_L;
 	extern volatile float vel_R, vel_L, xR, xL;		//両輪速度
-	extern volatile float targ_vel_R,targ_vel_L;	//目標速度
+	extern volatile float targ_vel_R,targ_vel_L;	        //目標速度
 	extern volatile float dif_vel_R, dif_vel_L;
-	extern volatile uint16_t kpvR,kpdR,kpvL,kpdL;
+	extern volatile float kvpR,kvdR,kviR,kvpL,kvdL,kviL;
 	
 	extern volatile uint16_t t_cnt_l, t_cnt_r,time, ms_time;		
 	extern volatile uint16_t minindex, maxindex;		//最低速度・最大速度
 	extern volatile uint16_t interval_l, interval_r;	//左右インターバル
 	
-	extern volatile float duty_r,duty_l,Kvolt,duty_oR,duty_oL;
+	extern volatile float duty_r,duty_l,duty_oR,duty_oL;
+	extern volatile float Kvolt,Kxr;			//加速度えるための電流定数，距離変換のための定数
 	extern volatile float accel_r,accel_l;
-	extern volatile float test_valR[1000],test_valL[1000];
-	extern volatile uint16_t test_valR1[1000],test_valL1[1000],test_valR2[1000],test_valL2[1000]; 
+	extern volatile float test_valR[2000],test_valL[2000],test_valR1[2000],test_valL1[2000];
+	extern volatile uint16_t test_valR2[1000],test_valL2[1000]; 
 	
 	extern volatile uint16_t pulse_l, pulse_r,pulse_pre_r, pulse_pre_l;		//左右エンコーダパルス関係
 	extern volatile int32_t dif_pulse_r, dif_pulse_l,pulse_sum_l, pulse_sum_r;
 	extern volatile float totalR_mm, totalL_mm, totalR_pre_mm, totalL_pre_mm;
+	extern volatile float offsetR_mm, offsetL_mm;
 	extern int16_t	sen_dl, sen_dr;					
 	
 	

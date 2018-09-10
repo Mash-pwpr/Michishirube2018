@@ -23,11 +23,24 @@ void Mtu3IcCmDIntFunc(void){		//パルス一周期でやると呼び出される
 	pin_write(P54,0);
 	pin_write(P55,0);
 
-	duty_l = Kvolt * accel_l / VOLT_BAT + kpvL + kpdL;
-	if(duty_l > 1){
-		duty_oL = duty_l;
-		duty_l = 0.8;
+	//duty_l = Kvolt * accel_l / VOLT_BAT + kpvL + kpdL;
+	duty_l = kvpL - kvdL + kviL;
+	
+	if(duty_l < 0){
+		MF.FLAG.L_FRONT = 0;					
+		MF.FLAG.L_BEHIND = 1;
+		duty_l = - duty_l;	
+	}else if(duty_l > 0){
+		MF.FLAG.L_FRONT = 1;					
+		MF.FLAG.L_BEHIND = 0;
 	}
+	
+	if(duty_l > 1){
+		duty_l = 0.90;
+	}else if(duty_l <= 0.01){
+		duty_l = 0.01;	
+	}
+		duty_oL = duty_l;
 
 		//====加減速処理====
 		//----加速----
@@ -51,7 +64,7 @@ void Mtu3IcCmDIntFunc(void){		//パルス一周期でやると呼び出される
 		}
 */
 		paraL0 = (1 - duty_l) * paraL1;									//デューティ逆計算
-		test_valL[time]  = duty_l;
+		
 		R_PG_Timer_SetTGR_C_MTU_U0_C3(paraL0);
 		R_PG_Timer_SetTGR_D_MTU_U0_C3(paraL1);
 
@@ -71,7 +84,7 @@ void Mtu3IcCmCIntFunc(void){
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //Mtu4IcCmDIntFunc
-//左モータの制御関数
+//右モータの制御関数
 // PWMを１パルス送るごとに呼び出される
 // RX631では1msよりは短くなることが多いから計算量に注意
 //+++++++++++++++++++++++++++++++++++++++++++++++
@@ -82,11 +95,26 @@ void Mtu4IcCmDIntFunc(void){			//右モータ制御関数
 	pin_write(PA4,0);
 	pin_write(PA6,0);
 
-	duty_r = Kvolt * accel_r / VOLT_BAT + kpvR + kpdR;
-	if(duty_r > 1){
+	//duty_r = Kvolt * accel_r / VOLT_BAT + kpvR + kpdR;
+	duty_r = kvpR - kvdR + kviR;
+	
+	if(duty_r < 0){
+		MF.FLAG.R_FRONT = 0;					
+		MF.FLAG.R_BEHIND = 1;
 		duty_oR = duty_r;
-		duty_r = 0.8;
+		duty_r = - duty_r;	
+	}else if(duty_r > 0){
+		MF.FLAG.R_FRONT = 1;					
+		MF.FLAG.R_BEHIND = 0;
+		duty_oR = duty_r;
 	}
+	
+	if(duty_r > 1){
+		duty_r = 0.90;
+	}else if(duty_r <= 0.01){
+		duty_r = 0.01;	
+	}
+		
 	
 	//====加減速処理====
 	//----減速----
@@ -126,10 +154,6 @@ void Mtu4IcCmCIntFunc(void){
 		pin_write(PA6,0);
 	}
 	
-	S12AD.ADANS0.WORD = 0x40;
-	R_PG_ADC_12_StartConversionSW_S12AD0();					
-	R_PG_ADC_12_GetResult_S12AD0(ad_res);
-	volt_bat = ad_res[6];
 }
 /*------------------------------------------------------------
 		センサ系の割り込み
@@ -140,10 +164,7 @@ void Mtu4IcCmCIntFunc(void){
 // 壁センサの取得と制御値の計算
 // ???l?F????
 //+++++++++++++++++++++++++++++++++++++++++++++++
-void Cmt1IntFunc(void){
-
-	time++;			//時間計測したい
-	
+void Cmt1IntFunc(void){	
 	switch(tp){
 	//タイマ内での分割処理
 	case 0:	
@@ -195,74 +216,10 @@ void Cmt1IntFunc(void){
 		pin_write(PE0,0);								
 		pin_write(PE2,0);								
 		pin_write(PE4,0);
-		
-		
-//		totalR_pre_mm = totalR_mm;
-//		totalL_pre_mm = totalL_mm;
-		
-		R_PG_Timer_GetCounterValue_MTU_U0_C1(&pulse_l);
-		R_PG_Timer_GetCounterValue_MTU_U0_C2(&pulse_r);
-		
-		if(pulse_sum_r > 0){				//アンダーフロー
-			dif_pulse_r = - (65535 * pulse_sum_r  + pulse_pre_r - pulse_r) ;
-			pulse_sum_r = 0;
-		}else if(pulse_sum_r < 0){			//オーバーフロー
-			dif_pulse_r = 65535 * pulse_sum_r + pulse_pre_r - pulse_r;
-			pulse_sum_r = 0;
-		}else{
-			dif_pulse_r = pulse_r - pulse_pre_r;	//通常時の処理
-			pulse_sum_r = 0;
-		}
-		
-		if(pulse_sum_l > 0 ){				//アンダーフロー
-			dif_pulse_l = - (65535 * pulse_sum_l + pulse_pre_l - pulse_l);
-			pulse_sum_l = 0;
-		}else if(pulse_sum_l < 0){			//オーバーフロー
-			dif_pulse_l = 65535 * pulse_sum_l + pulse_pre_l - pulse_l;
-			pulse_sum_l = 0;
-		}else {
-			dif_pulse_l = pulse_l - pulse_pre_l;	//通常処理
-			pulse_sum_l = 0;
-		}
-
-		xR = -DIA_WHEEL_mm * (DIA_PINI_mm / DIA_SQUR_mm) * 2 * Pi * (dif_pulse_r % 4096) / 4096;
-		xL = -DIA_WHEEL_mm * (DIA_PINI_mm / DIA_SQUR_mm) * 2 * Pi * (dif_pulse_l % 4096) / 4096;
-
-		totalR_mm += xR;
-		totalL_mm += xL;
-		
-		pulse_pre_r = pulse_r;
-		pulse_pre_l = pulse_l;
-		
+				
 		break;
 		//----制御計算----
 	case 3:			
-		vel_R = xR  / 4;	//距離[mm]を時間で除してに直す[m/s]
-		vel_L = xL  / 4;
-		
-		test_valR[time/4] = vel_R;
-		test_valL[time/4] = vel_L;
-/*		test_valR1[time/4] = pulse_r;
-		test_valR2[time/4] = dif_pulse_r;
-		test_valL[time/4] = vel_L;
-		test_valL1[time/4] = pulse_l;
-		test_valL2[time/4] = dif_pulse_l;
-*/		
-		//PIDしてみる？
-		dif_vel_R = targ_vel_R - vel_R;
-		kpvR = KPR * dif_vel_R;
-		kpdR = KDR * (dif_vel_R - dif_pre_vel_R);
-		
-		dif_pre_vel_R = dif_vel_R;
-		
-		dif_vel_L = targ_vel_L - vel_L;
-		kpvL = KPL * dif_vel_L;
-		kpdL = KDL * (dif_vel_L - dif_pre_vel_L);
-		
-		dif_pre_vel_L = dif_vel_L;
-
-		
-		
 		
 		//壁制御フラグアリの場合
 		if(MF.FLAG.CTRL){
@@ -289,8 +246,89 @@ void Cmt1IntFunc(void){
 
 	//====タスクポインタで分割処理====
 	tp = (tp+1) % 4;
-
 }
+
+void Cmt2IntFunc(){
+
+	time++;			//時間計測したい
+/*	
+	if(time > 100){
+		targ_vel_L = 0.5;
+		targ_vel_R = 0.5;
+	
+	}
+*/
+	R_PG_Timer_GetCounterValue_MTU_U0_C1(&pulse_l);
+	R_PG_Timer_GetCounterValue_MTU_U0_C2(&pulse_r);
+	
+	if(pulse_sum_r > 0){				//アンダーフロー
+		dif_pulse_r = - (65535 * pulse_sum_r  + pulse_pre_r - pulse_r) ;
+		pulse_sum_r = 0;
+	}else if(pulse_sum_r < 0){			//オーバーフロー
+		pulse_sum_r = - pulse_sum_r;
+		dif_pulse_r = 65535 * pulse_sum_r + pulse_pre_r - pulse_r;
+		pulse_sum_r = 0;
+	}else{
+		dif_pulse_r = pulse_r - pulse_pre_r;	//通常時の処理
+		pulse_sum_r = 0;
+	}
+		
+	if(pulse_sum_l > 0 ){				//アンダーフロー
+		dif_pulse_l = - (65535 * pulse_sum_l + pulse_pre_l - pulse_l);
+		pulse_sum_l = 0;
+	}else if(pulse_sum_l < 0){			//オーバーフロー
+		pulse_sum_l = - pulse_sum_l;
+		dif_pulse_l = 65535 * pulse_sum_l + pulse_pre_l - pulse_l;
+		pulse_sum_l = 0;
+	}else {
+		dif_pulse_l = pulse_l - pulse_pre_l;	//通常処理
+		pulse_sum_l = 0;
+	}
+/*
+	xR = -DIA_WHEEL_mm * (DIA_PINI_mm / DIA_SQUR_mm) * 2 * Pi * (dif_pulse_r % 4096) / 4096;
+	xL = -DIA_WHEEL_mm * (DIA_PINI_mm / DIA_SQUR_mm) * 2 * Pi * (dif_pulse_l % 4096) / 4096;
+*/
+	xR = Kxr * (dif_pulse_r % 4096);
+	xL = Kxr * (dif_pulse_l % 4096);
+
+	totalR_mm += xR;
+	totalL_mm += xL;
+		
+	pulse_pre_r = pulse_r;
+	pulse_pre_l = pulse_l;
+		
+	vel_R = xR;	//距離[mm]を時間で除してに直す[m/s] 割り算ではなく掛け算の方が計算速い
+	vel_L = xL;
+		
+	test_valR[time] = vel_R;
+	test_valL[time] = vel_L;
+	test_valR1[time] = totalR_mm;
+	test_valL1[time] = totalL_mm;
+	
+/*		test_valR1[time/4] = pulse_r;
+		test_valR2[time/4] = dif_pulse_r;
+		
+		test_valL2[time/4] = dif_pulse_l;
+*/		
+	//PIDしてみる？
+	//偏差の計算
+	dif_vel_R = targ_vel_R - vel_R;	
+	dif_vel_L = targ_vel_L - vel_L;
+	//偏差のP制御
+	kvpR = KPR * dif_vel_R;				
+	kvpL = KPL * dif_vel_L;
+	//偏差のD制御
+	kvdR = KDR * (dif_vel_R - dif_pre_vel_R);	
+	kvdL = KDL * (dif_vel_L - dif_pre_vel_L);
+	//偏差のI制御
+	kviR += KIR * dif_vel_R;
+	kviL += KIL * dif_vel_L;
+	
+	//現在の偏差をバッファに保存
+	dif_pre_vel_R = dif_vel_R;		
+	dif_pre_vel_L = dif_vel_L;	
+}
+
 
 void Mtu2UnIntFunc() {
 	pulse_sum_r += 1;
@@ -303,7 +341,7 @@ void Mtu1UnIntFunc() {
 	pulse_sum_l += 1;
 }
 void Mtu1OvIntFunc() {
-	pulse_sum_l -= 2;
+	pulse_sum_l -= 1;
 }
 
 void Cmt0IntFunc(){

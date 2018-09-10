@@ -86,10 +86,10 @@ void enc_test(){
 	
 	R_PG_Timer_StartCount_MTU_U0_C1();
 	R_PG_Timer_StartCount_MTU_U0_C2();
-	
+	R_PG_Timer_StartCount_CMT_U1_C2();
 	
 	while(1){
-		R_PG_Timer_GetCounterValue_MTU_U0_C1(&pulse_l);
+/*		R_PG_Timer_GetCounterValue_MTU_U0_C1(&pulse_l);
 		R_PG_Timer_GetCounterValue_MTU_U0_C2(&pulse_r);
 		
 		if(pulse_sum_r == 1){				//アンダーフロー時
@@ -118,8 +118,9 @@ void enc_test(){
 		
 		pulse_pre_r = pulse_r;
 		pulse_pre_l = pulse_l;
-		
-		uart_printf(" pulse_r: %4d  pulse_l:%4d totalR_mm:%4lf totalL_mm:%4lf \r\n", pulse_r, pulse_l, totalR_mm, totalL_mm);	
+*/		
+		uart_printf(" pulse_r: %4d  pulse_l:%4d totalR_mm:%4lf totalL_mm:%4lf \r\n", pulse_r, pulse_l, totalR_mm, totalL_mm);
+		ms_wait(100);
 	}
 
 }
@@ -127,5 +128,8 @@ void enc_test(){
 void sensor_start(){
 	R_PG_Timer_StartCount_MTU_U0_C1();
 	R_PG_Timer_StartCount_MTU_U0_C2();
-	R_PG_Timer_StartCount_CMT_U0_C1();	
+	
+	R_PG_Timer_StartCount_CMT_U0_C1();
+	R_PG_Timer_StartCount_CMT_U1_C2();
+	
 }

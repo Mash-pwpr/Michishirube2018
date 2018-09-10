@@ -126,8 +126,8 @@ void select_mode(char *mode){
 	uart_printf("Finish :  This is mode %2d\r\n", *mode);
 	melody(1175,500);
 	
-	R_PG_Timer_HaltCount_MTU_U0_C3();
-	R_PG_Timer_HaltCount_MTU_U0_C4();
+	R_PG_Timer_HaltCount_MTU_U0_C1();
+	R_PG_Timer_HaltCount_MTU_U0_C2();
 
 	R_PG_Timer_SetCounterValue_MTU_U0_C1(0);
 	R_PG_Timer_SetCounterValue_MTU_U0_C2(0);
