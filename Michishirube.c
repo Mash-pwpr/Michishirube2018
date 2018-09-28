@@ -26,8 +26,10 @@ int main(void) {
 
 	//====変数宣言====
 	char mode = 0;
-	uint16_t i;
-	
+	uint16_t i,j;
+/*	uint32_t tx_data[4] = {0xf5,0xC7,0xC8,0xf5};		//{0x75,0x47,0x48,0x75};
+	uint32_t rx_data[4] = {0x00,0x00,0x00,0x00};
+*/	
 	//====初期化====
 	R_PG_Clock_Set();					//クロック設定
 
@@ -35,90 +37,100 @@ int main(void) {
 	val_Init();							//各種変数の初期化
 	timer_Init();						//タイマ系の初期化
 	sensor_Init();						//センサ系の初期化
-	uart_Init();					//シリアル通信の初期化	
+	uart_Init();					//シリアル通信の初期化
+	
+/*	pin_write(PC4,1);
 	
 	//timer_start();
-/*	while(1){
-		
-		for(i=10;i<60000;i+=10){
-			melody(i,100);
-		}
+	while(1){
 		i = 0x75;
-		//R_PG_RSPI_TransferAllData_C0(&i,&test1,1);
+		pin_write(PC4,0);
+		ms_wait(1000);
+		R_PG_RSPI_TransferAllData_C0(&i,&j,1);
+		//R_PG_RSPI_TransferAllData_C0(tx_data,rx_data,1);
 		//R_PG_RSPI_StartTransfer_C0(0x47,&test1,1);
 		//test_s = test1 + test2;
-		uart_printf("Who am I : \r\n");
-		uart_printf("0x%x\r\n",test1);
-		ms_wait(1000);
 		
+		uart_printf("Who am I : \r\n");
+		uart_printf("0x%x,0x%x,0x%x,0x%x\r\n",rx_data[0],rx_data[1],rx_data[2],rx_data[3]);
+		
+		uart_printf("Who am I : %x\r\n",j);
+		pin_write(PC4,1);
+		ms_wait(1000);
 	}
 */
 
-//	duty_r = KR * Kvolt * accel_r / VOLT_BAT;
-//	duty_l = KL * Kvolt * accel_l / VOLT_BAT;
-	
-	//uart_printf("R:%lf\tL%lf\ti:%d\tj:%d\r\n",duty_r,duty_l,i,j);
-	ms_wait(100);
-	S12AD.ADANS0.WORD = 0x40;
+/*	S12AD.ADANS0.WORD = 0x40;
 	R_PG_ADC_12_StartConversionSW_S12AD0();					
 	R_PG_ADC_12_GetResult_S12AD0(ad_res);
 	volt_bat = ad_res[6];
 	ms_wait(100);
 
 		if(volt_bat < 3000 && 1000 < volt_bat){
-				melody(1320,2000);
+				melody(1320,500);
+				melody(1120,500);
+				melody(920,500);
 				R_PG_Timer_StopModule_MTU_U0();
 				R_PG_Timer_StopModule_CMT_U0();
 				uart_printf("Voltage Out! volt is %d\r\n",volt_bat);
 				while(1){
 				}
 			}
-
-	targ_vel_L = 1.0;
-	targ_vel_R = 1.0;
-	offsetR_mm = 0.5 * targ_vel_R * OFFDT;
+*/
+/*		
+	set_dir(FORWARD);
+	sensor_start();
+	drive_start();
+	ms_wait(100);
 		
+	targ_vel_L = 0.5;
+	targ_vel_R = 0.5;
 		
-		set_dir(FORWARD);
-		sensor_start();
-		drive_start();
-		//ms_wait(500);
-		while((totalR_mm - offsetR_mm) < 180){
-			
+		while(time < 600){
+			if(time > 300){
+				targ_vel_L = 1.0;
+				targ_vel_R = 1.0;
+			}
 		}
+		totalR_mm = 0;
+		while(time < 1200)
+			if(time > 900){
+				targ_vel_L = 0.5;
+				targ_vel_R = 0.5;
+				offsetR_mm = 0.5 * targ_vel_R * OFFDT;
+			}
+		while((totalR_mm - offsetR_mm) < 180){
+			if(time > 300){
+				targ_vel_L = 0.5;
+				targ_vel_R = 0.5;
+				offsetR_mm = 0.5 * targ_vel_R * OFFDT;
+			}
+		}	
 		targ_vel_L = 0;
 		targ_vel_R = 0;
-		ms_wait(500);
-/*				do{
-					
-				uart_printf("Rmm is %lf duty_r is %lf,duty_oR is %lf, vel_R is %lf\r\n",totalR_mm,duty_r, duty_oR,vel_R);
-				//ms_wait(10);
-					/*if(volt_bat < 3650 && 1000 < volt_bat){
-						melody(1320,2000);
-						R_PG_Timer_StopModule_MTU_U0();
-						R_PG_Timer_StopModule_CMT_U0();
-						while(1){
-						}
-					}*
-				}while(vel_R < 1 );
-					
-				uart_printf("END\r\n");
-				ms_wait(100);
-				do{
-					targ_vel_L = 0;
-					targ_vel_R = 0;
-						
-				}while(vel_R > 0);
+		ms_wait(200);			//速度がゼロに収束するまで待つ
+		
 			
-*/				drive_stop(1);
-				R_PG_Timer_HaltCount_CMT_U1_C2();
-				R_PG_Timer_HaltCount_CMT_U0_C1();
-				ms_wait(10000);				
-				
-			//}
+*/				
+	set_dir(FORWARD);
+	sensor_start();
+	//set_position();
+/*	half_sectionA();
+	half_sectionD();
+	
+	half_sectionA();
+	half_sectionD();
+
+	half_sectionA();
+	half_sectionD();
+*/
+	sensor_stop();
+		
+	//a_section();
+	melody(1120,1000);
 
 	while(1){ // Main Loop
-		uart_printf("Hello, World! Kvolt = %lf Kxr = %lf\r\n",Kvolt,Kxr);	
+		uart_printf("Hello, World!\r\n");	
 		//====モードセレクト====
 		select_mode(&mode);
 		ms_wait(100);
@@ -131,40 +143,37 @@ int main(void) {
 			//uart_printf("base_r = %3d\r", base_r);
 			ms_wait(500);
 			uart_printf("START\r\n");
-			for(i=0;i<1000;i++){
-				uart_printf("%lf,%lf, %lf, %lf,%lf\r\n",test_valR[i],test_valR1[i] ,test_valL[i],test_valL1[i]);
-				ms_wait(10);
+			for(i=0;i<2000;i++){
+				uart_printf("%lf, %lf,%lf, %lf\r\n",test_valR1[i],test_valL1[i],test_valR[i],test_valL[i]);
+				ms_wait(1);
 			}
-			uart_printf("ALL");
+			uart_printf("ALL\r\n");
 
 			break;
 		case 1:	//----一次探索走行----
 			goal_x = GOAL_X;									//ゴール座標を設定　　GOAL_Xはglobal.hにマクロ定義あり
 			goal_y = GOAL_Y;									//ゴール座標を設定　　GOAL_Yはglobal.hにマクロ定義あり
 
-			start_ready();
 			start_wait();
-
+			start_ready();
+			
 			get_wall_info();									//壁情報の初期化     get_wall_info()はsensor.cに関数定義あり
-			searchA();											//ゴール区画まで探索，進行する　searchA()はsearch.cに関数定義あり
+			searchA();										//ゴール区画まで探索，進行する　searchA()はsearch.cに関数定義あり
 			goal_x = goal_y = 0;								//ゴール座標をスタート区画に設定
 			Wait;												//待機
 			searchA();											//戻ってくる
 
 			goal_x = GOAL_X;									//ゴール座標設定
-			goal_y = GOAL_Y;									//ゴール座標設定
-
-			
+			goal_y = GOAL_Y;									//ゴール座標設定	
 			break;
 
 			//----連続探索走行----
 		case 2:
 			goal_x = GOAL_X;
 			goal_y = GOAL_Y;
-
 			
-			start_ready();
 			start_wait();
+			start_ready();
 			
 			searchSA();
 			goal_x = goal_y = 0;

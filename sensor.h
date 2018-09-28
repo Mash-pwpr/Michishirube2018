@@ -41,6 +41,8 @@
 		uint16_t base_l, base_r;								//基準値を格納
 		int16_t dif_l, dif_r;									//AD値と基準との差
 		uint16_t volt_bat;									//電源電圧監視
+		uint16_t cont_r,cont_l;										//壁制御の比例定数
+		uint16_t Cont_kp[5];									//壁制御の場合分け
 	#else
 		//----発光LEDポート----
 		extern uint16_t VLED_R;
@@ -55,6 +57,10 @@
 		extern uint16_t base_l,  base_r;
 		extern int16_t dif_l, dif_r;
 		extern uint16_t volt_bat;
+		
+		extern uint16_t cont_r,cont_l;										
+		extern uint16_t Cont_kp[5];
+
 	#endif
 
 /*============================================================
@@ -65,5 +71,6 @@
 	void get_wall_info();				//壁情報を読む
 	void enc_test();
 	void sensor_start();
+	void sensor_stop();
 	
 #endif /* SENSOR_H_ */

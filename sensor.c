@@ -40,6 +40,7 @@ unsigned char get_base()
 	}else{
 	}
 	//ms_wait(50);
+	uart_printf("base:%d, %d\r\n", base_r, base_l);
 
 	return res;											//理想的な値を取得できたかを返す
 
@@ -60,7 +61,7 @@ void get_wall_info()
 	pins_write(DISP_LEDS, 0, LED_NUM);					//LEDを全消灯
 
 	//----前壁を見る----
-	if(ad_fr > WALL_BASE_F){
+	if(ad_ff > WALL_BASE_F){
 		//AD値が閾値より大きい(=壁があって光が跳ね返ってきている)場合
 		wall_info |= 0x88;								//壁情報を更新
 		tmp = 0x06;										//1番目と2番目のLEDを点灯させるよう設定
@@ -89,30 +90,7 @@ void enc_test(){
 	R_PG_Timer_StartCount_CMT_U1_C2();
 	
 	while(1){
-/*		R_PG_Timer_GetCounterValue_MTU_U0_C1(&pulse_l);
-		R_PG_Timer_GetCounterValue_MTU_U0_C2(&pulse_r);
-		
-		if(pulse_sum_r == 1){				//アンダーフロー時
-			dif_pulse_r = (pulse_r - 65535) + pulse_pre_r;
-			pulse_sum_r = 0;
-		}else if(pulse_sum_r == 2){			//オーバーフロー時
-			dif_pulse_r = pulse_r + (65535 - pulse_pre_r);
-			pulse_sum_r = 0;
-		}else{
-			dif_pulse_r = pulse_r - pulse_pre_r;
-		}
-		
-		if(pulse_sum_l == 1){				//アンダーフロー時
-			dif_pulse_l = (pulse_l - 65535) + pulse_pre_l;
-			pulse_sum_l = 0;
-		}else if(pulse_sum_l == 2){			//オーバーフロー時
-			dif_pulse_l = pulse_l + (65535 - pulse_pre_l);
-			pulse_sum_l = 0;
-		}else {
-			dif_pulse_l = pulse_l - pulse_pre_l;
-		}
-
-		
+/*		
 		totalR_mm += -DIA_WHEEL_mm * (DIA_PINI_mm / DIA_SQUR_mm) * 2 * Pi * (dif_pulse_r % 4096) / 4096;
 		totalL_mm += -DIA_WHEEL_mm * (DIA_PINI_mm / DIA_SQUR_mm) * 2 * Pi * (dif_pulse_l % 4096) / 4096;
 		
@@ -126,10 +104,17 @@ void enc_test(){
 }
 
 void sensor_start(){
-	R_PG_Timer_StartCount_MTU_U0_C1();
+	R_PG_Timer_StartCount_MTU_U0_C1();	//エンコーダ左右
 	R_PG_Timer_StartCount_MTU_U0_C2();
 	
-	R_PG_Timer_StartCount_CMT_U0_C1();
-	R_PG_Timer_StartCount_CMT_U1_C2();
+	R_PG_Timer_StartCount_CMT_U0_C1();	//壁センサ用LED起動タイマ
+	R_PG_Timer_StartCount_CMT_U1_C2();	//エンコーダ処理，PID計算用タイマ
 	
+}
+void sensor_stop(){
+	R_PG_Timer_HaltCount_MTU_U0_C1();
+	R_PG_Timer_HaltCount_MTU_U0_C2();
+
+	R_PG_Timer_HaltCount_CMT_U0_C1();
+	R_PG_Timer_HaltCount_CMT_U1_C2();	
 }

@@ -23,8 +23,9 @@
 // 戻り値：なし
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void uart_Init(){
-	R_PG_SCI_Set_C1();
-	R_PG_RSPI_Set_C0();
+	R_PG_SCI_Set_C1();		//シリアル通信用準備
+	
+	R_PG_RSPI_Set_C0();		//ジャイロ用SPI設定
 	R_PG_RSPI_SetCommand_C0();
 }
 
@@ -54,9 +55,10 @@ void uart_printf(const char *format, ...) {
     va_end(arg);
 }
 
-void Spi0IntFunc(){
+void Spi0ErIntFunc(){
 	//R_PG_RSPI_StopModule_C0();
 	while(1){
 		uart_printf("ERROR...\r\n");
 	}
 }
+

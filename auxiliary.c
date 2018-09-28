@@ -110,7 +110,7 @@ void select_mode(char *mode){
 		R_PG_Timer_GetCounterValue_MTU_U0_C1(&encL);
 		R_PG_Timer_GetCounterValue_MTU_U0_C2(&encR);
 		
-		nowR = (uint16_t)(encR / 4000);
+		nowR = (uint16_t)(encR / 4500);
 		nowL = (uint16_t)(encL / 30000);
 		
 		//ms_wait(50);
@@ -121,7 +121,7 @@ void select_mode(char *mode){
 			uart_printf(" mode:%2d\r\n", *mode);
 			melody(880,100);
 		}
-	}while(nowL - preL == 0);
+	}while(nowL != 1);
 	
 	uart_printf("Finish :  This is mode %2d\r\n", *mode);
 	melody(1175,500);
@@ -140,6 +140,7 @@ void timer_start(){
 	R_PG_Timer_StartCount_MTU_U0_C4();
 
 	R_PG_Timer_StartCount_CMT_U0_C1();
+	R_PG_Timer_StartCount_CMT_U1_C2();
 
 }
 
@@ -163,8 +164,8 @@ void start_wait(){
 	uart_printf("Ready???\r\n");
 	
 	while(1){
-		uart_printf("ad_l: %4d ad_fl:%4d ad_fr:%4d ad_r:%4d \r\n", ad_l, ad_fl, ad_fr, ad_r);
-		if(ad_ff > 1000){
+		uart_printf("ad_l: %4d ad_fl:%4d ad_ff:%4d  ad_fr:%4d ad_r:%4d\r\n ", ad_l, ad_fl, ad_ff, ad_fr, ad_r);
+		if(ad_ff > 2500){
 			melody(1320,300);
 			melody(1397,300);
 			melody(1568,300);
@@ -172,26 +173,32 @@ void start_wait(){
 			break;
 		}
 	}
-	
-	R_PG_Timer_HaltCount_CMT_U0_C1();
+/*	R_PG_Timer_HaltCount_CMT_U0_C1();
 	
 	pin_write(PE0,0);
 	pin_write(PE1,0);
 	pin_write(PE2,0);
 	pin_write(PE3,0);
 	pin_write(PE4,0);
-
-	
+*/
 }
 
 void start_ready(void){
-			turn_R90();
-			set_position();
-			ms_wait(200);
-			turn_L90();
-			set_position();
-			ms_wait(200);
-			
-			get_base();
+	sensor_start();
+	turn_R90();
+	ms_wait(100);
+	set_position();
+	ms_wait(200);
+	
+	turn_L90();
+	ms_wait(100);
+	
+	MF.FLAG.CTRL = 0;										//制御を無効にする
+	set_dir(BACK);											//後退するようモータの回転方向を設定
+	driveC(1000, 1);								//尻を当てる程度に後退。回転後に停止する
+	get_base();
+	set_dir(FORWARD);										//前進するようにモータの回転方向を設定
+	driveC(CENTER_TIME, 1);									//定速で指定パルス分回転。回転後に停止する
+  	Wait;
 
 }

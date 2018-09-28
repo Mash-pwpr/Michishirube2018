@@ -43,14 +43,28 @@
 //#define DR_SEC_U 430		//等速1区画
 //#define DR_SEC_ADL 360	//長距離加減速時1区画
 #define DR_SEC_HALF 208		//半区画走行用パルス。2倍すると1区画分に 205
-#define DR_ROT_R90 148	//右90度回転用パルス数 145
-#define	DR_ROT_L90 147  //左90度回転用パルス数 145
+#define DR_ROT_R90 3.14*R_BODY*0.5	//右90度距離mm 145
+#define	DR_ROT_L90 3.14*R_BODY*0.5  //左90度距離mm 145
 #define DR_ROT_180 294		//180度回転用パルス数 289
 #define DR_CENT_BACK 300	//後ろ壁に当てるために下がるパルス数
 #define DR_CENT_SET 95		//後ろ壁から中央までのパルス数
-#define CONT 36				//比例制御係数
+#define CENTER_TIME 350
+
+#define CONT0 0.0001				//壁Pゲイン
+#define CONT1 0.000025				//壁Pゲイン
+#define CONT2 0.000025				//壁Pゲイン
+#define CONT3 0.0001				//壁Pゲイン
+#define CONT4 0.0001				//壁Pゲイン
+
+#define ROT_TIME 355
+#define ROT180_TIME 500
+
+//----DC走行関連----
+#define HALF_MM 90
+#define ONE_MM 180
+
 //----テーブル速度関連----
-#define MAXSPEED_S 130		//探索走行時の速度の最大の要素数
+#define MAXSPEED_S 1000		//探索走行時の速度の最大の要素数
 #define MINSPEED_S 0		//探索走行時の速度の最小の要素数
 #define MAXSPEED_H 287		//高速走行時の速度の最大の要素数
 #define MINSPEED_H 100		//高速走行時の速度の最小の要素数
@@ -62,12 +76,11 @@
 #define Pi 3.1415
 #define Ktolk 1.98
 #define Rmotor 1.07
+#define R_BODY 35
 #define MASS 0.1
 #define VOLT_BAT 7.4
-#define KR 1
+#define KR 1.2
 #define KL 1
-
-#define OFFDT 0.2
 
 //---PIDゲイン---
 #define KPR 1.3
@@ -85,23 +98,23 @@
 /*------------------------------------------------------------
 		センサ系t
 ------------------------------------------------------------*/
-//----壁判断基準地----
-#define WALL_BASE_F 50		//前壁
-#define WALL_BASE_L 55      //左壁
-#define WALL_BASE_R 47		//右壁
+//----壁判断基準----
+#define WALL_BASE_F 800		//前壁
+#define WALL_BASE_L 500		//左壁
+#define WALL_BASE_R 500		//右壁
 
 //----制御基準値----
-#define SREF_MIN_L -30	//左制御基準下限-20
-#define SREF_MAX_L 280		//左制御基準上限280
-#define SREF_MIN_R -60	//右制御基準下限-20
-#define SREF_MAX_R 280 	//右制御基準上限280
+#define SREF_MIN_L 150	//左制御基準下限-20
+#define SREF_MAX_L 2000	//左制御基準上限280
+#define SREF_MIN_R 200	//右制御基準下限-20
+#define SREF_MAX_R 2000 //右制御基準上限280
 
 /*------------------------------------------------------------
 		探索系
 ------------------------------------------------------------*/
 //----ゴール座標----
-#define GOAL_X 11	//7
-#define GOAL_Y 2	//7
+#define GOAL_X 3	//7
+#define GOAL_Y 3	//7
 
 /*------------------------------------------------------------
 		共用・構造体の定義
@@ -129,10 +142,10 @@
 			unsigned char DECL:1;		//減速フラグ(B5)
 			unsigned char DEF:1;		//定速フラグ(B6)
 			unsigned char STOP:1;		//停止フラグ(B7)
-			unsigned char R_FRONT:1;	//予備ビット(B8)		
-			unsigned char R_BEHIND:1;		//予備フラグ(B9)
-			unsigned char L_FRONT:1;		//予備フラグ(B10)
-			unsigned char L_BEHIND:1;		//予備フラグ(B11)
+			unsigned char R_DIR:1;		//予備ビット(B8)		
+			unsigned char L_DIR:1;		//予備フラグ(B9)
+			unsigned char FRONT:1;		//予備フラグ(B10)
+			unsigned char BEHIND:1;		//予備フラグ(B11)
 			unsigned char S5:1;		//予備フラグ(B12)
 			unsigned char S6:1;		//予備フラグ(B13)
 			unsigned char S7:1;		//予備フラグ(B14)

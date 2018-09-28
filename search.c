@@ -35,41 +35,64 @@ void searchA(){												//一次走行　一番基本的な初期装備
 	write_map();											//地図の初期化
 	make_smap();											//歩数図の初期化
 	make_route();											//最短経路探索(route配列に動作が格納される)
-
+	sensor_start();
+	
+	uart_printf("ad_l: %4d ad_fl:%4d ad_ff:%4d  ad_fr:%4d ad_r:%4d\r\n ", ad_l, ad_fl, ad_ff, ad_fr, ad_r);
 	//====探索走行====
 	do{
+		//uart_printf("ad_l: %4d ad_fl:%4d ad_ff:%4d  ad_fr:%4d ad_r:%4d\r\n ", ad_l, ad_fl, ad_ff, ad_fr, ad_r);
+		//uart_printf("route is %x\r\n",route[r_cnt]);
+		if(ad_r > WALL_BASE_R)	cont_r = Cont_kp[0];
+		else			cont_r = Cont_kp[1];
+		if(ad_l > WALL_BASE_L)	cont_l = Cont_kp[0];
+		else			cont_l = Cont_kp[1];		
 		//----進行----
 		switch(route[r_cnt++]){								//route配列によって進行を決定。経路カウンタを進める
 			//----前進----
 			case 0x88:
+				set_dir(FORWARD);
+				melody(1120,500);
 				break;
 			//----右折----
 			case 0x44:
 				turn_R90();									//右回転
+				if(ad_l > WALL_BASE_L){
+					set_position();
+				}
 				turn_dir(DIR_TURN_R90);						//マイクロマウス内部位置情報でも右回転処理
 				Wait;										//安定するまで待機
+				set_dir(FORWARD);
+				melody(920,500);
 				break;
 			//----180回転----
 			case 0x22:
-				turn_180();									//180度回転
+				turn_180();							//180度回転
+				if(ad_ff > WALL_BASE_F){
+					set_position();
+				}
 				turn_dir(DIR_TURN_180);						//マイクロマウス内部位置情報でも180度回転処理
-				Wait;										//安定するまで待機
+				Wait;								//安定するまで待機
+				set_dir(FORWARD);
+				melody(1320,500);
 				break;
 			//----左折----
 			case 0x11:
 				turn_L90();									//左回転
+				if(ad_r > WALL_BASE_R){
+					set_position();
+				}
 				turn_dir(DIR_TURN_L90);						//マイクロマウス内部位置情報でも左回転処理
 				Wait;										//安定するまで待機
+				set_dir(FORWARD);
+				melody(720,500);
 				break;
 		}
-
 		a_section();										//前進する
-		adv_pos();											//マイクロマウス内部位置情報でも前進処理
+		adv_pos();										//マイクロマウス内部位置情報でも前進処理
 		conf_route();										//最短経路で進行可能か判定
 
 	}while((PRELOC.AXIS.X != goal_x) || (PRELOC.AXIS.Y != goal_y));
 															//現在座標とgoal座標が等しくなるまで実行
-
 	ms_wait(2000);											//スタートでは***2秒以上***停止しなくてはならない
 	turn_180();												//180度回転
 	turn_dir(DIR_TURN_180);									//マイクロマウス内部位置情報でも180度回転処理
@@ -96,6 +119,11 @@ void searchSA(){											//連続走行の未完成アルゴリズム、完成
 	conf_route();
 	//====探索走行====
 	do{
+		if(ad_r > WALL_BASE_R)	cont_r = Cont_kp[0];
+		else			cont_r = Cont_kp[1];
+		if(ad_l > WALL_BASE_L)	cont_l = Cont_kp[0];
+		else			cont_l = Cont_kp[1];
+
 		//----進行----
 		switch(route[r_cnt++]){								//route配列によって進行を決定。経路カウンタを進める
 			//----前進----
@@ -107,29 +135,21 @@ void searchSA(){											//連続走行の未完成アルゴリズム、完成
 				half_sectionD();
 				turn_R90();
 				turn_dir(DIR_TURN_R90);
-
-				half_sectionA();									//ここで実は一文だけ抜けています、がんばって　標
-
-				get_wall_info();
+				half_sectionA();			//ここで実は一文だけ抜けています、がんばって　標
 				break;
 			//----180回転----
 			case 0x22:
 				half_sectionD();
 				turn_180();
 				turn_dir(DIR_TURN_180);
-
-				half_sectionA();									//ここでも一文だけ抜けています、走らせてみると上手くいかないのはこの辺のせい、　標
-
+				half_sectionA();			//ここでも一文だけ抜けています、走らせてみると上手くいかないのはこの辺のせい、　標
 				break;
 			//----左折----
 			case 0x11:
 				half_sectionD();
 				turn_L90();
 				turn_dir(DIR_TURN_L90);
-
-				half_sectionA();										//想定通り、ここでも何か抜けてます、がんばって  標
-
-				get_wall_info();
+				half_sectionA();			//想定通り、ここでも何か抜けてます、がんばって  標
 				break;
 		}
 

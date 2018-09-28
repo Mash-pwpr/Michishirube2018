@@ -32,17 +32,15 @@ void port_Init(void){
 	PORT.PSRA.BIT.PSEL7 = 0;
 	
 	//I/O関係のポート設定
-	R_PG_IO_PORT_Set_P5();		//モタドラへの指示
-	R_PG_IO_PORT_Set_PA();		//モタドラへの指示
-	R_PG_IO_PORT_Set_PC();		//
+	R_PG_IO_PORT_Set_P5();		//モタドラへの指示用ピン
+	R_PG_IO_PORT_Set_PA();		//モタドラへの指示用ピン
+	R_PG_IO_PORT_Set_PC();		//SPI用ピン
 
 	PORTB.PDR.BIT.B6 = 1;
 	PORTB.PDR.BIT.B7 = 1;
 	PORTB.PODR.BIT.B6 = 1;
 	PORTB.PODR.BIT.B7 = 1;
 				
-	PIN_L(MDR_REF);				//リファレンスを切る　ピン2_1の出力をLowに設定
-
 	set_dir(FORWARD);			//進行方向を前へ
 
 }
@@ -59,6 +57,7 @@ void sensor_Init(void){
 
 // センサ系，走行系，探索系　の変数初期化
 void val_Init(void){
+	int i;
 	//----センサ系----
 	tp = 0;
 	ad_l = ad_r = ad_fr = ad_fl = 0;
@@ -66,18 +65,38 @@ void val_Init(void){
 	pulse_sum_l = pulse_sum_r = 0;
 	pulse_pre_l = pulse_pre_r = 0;
 	time = 0;
-	totalR_pre_mm = totalL_pre_mm = 0;
-	totalR_mm = totalL_mm = 0;
+	velR0 = velL0 = 1;
+
+	totalR_mm = totalL_mm = totalG_mm = 0;
 	dif_pre_vel_R = dif_pre_vel_L = 0;
+	t_cnt_r = t_cnt_l = 0;
 	
 	kvpR = kvdR = kviR =  kvpL = kvdL = kviL = 0;
+	Cont_kp[0] = CONT0;
+	Cont_kp[1] = CONT1;
+	Cont_kp[2] = CONT2;
+	Cont_kp[3] = CONT3;
+	Cont_kp[4] = CONT4;
 	
-	accel_r = 0.5;
-	accel_l = 0.5;
+	cont_r = cont_l = Cont_kp[0];
 	
+	accel = 1.0;
+	max_vel_G = 0.5;
+	off_dt = max_vel_G / accel;
+	
+	for(i=0;i<2000;i++){
+		targ_vel[i] = accel * 0.001 * i;
+		
+		if(targ_vel[i] > max_vel_G){
+			targ_vel[i] = max_vel_G;
+			maxindex = i;			//最高速度初期化     
+			minindex = MINSPEED_S;		//最低速度初期化     MINSPEED_Sはglobal.hにマクロ定義あり
+
+		}
+	}
 	//----走行系----
-	maxindex = MAXSPEED_S;			//最高速度初期化     MAXSPEED_Sはglobal.hにマクロ定義あり
-	minindex = MINSPEED_S;			//最低速度初期化     MINSPEED_Sはglobal.hにマクロ定義あり
+/*	maxindex = MAXSPEED_S;			//最高速度初期化     MAXSPEED_Sはglobal.hにマクロ定義あり
+*/	minindex = MINSPEED_S;			//最低速度初期化     MINSPEED_Sはglobal.hにマクロ定義あり
 	MF.FLAGS = 0x80;			//フラグクリア＆停止状態  0x80=0b10000000
 
 	//----探索系----
