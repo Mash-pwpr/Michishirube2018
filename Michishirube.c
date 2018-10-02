@@ -26,10 +26,8 @@ int main(void) {
 
 	//====変数宣言====
 	char mode = 0;
-	uint16_t i,j;
-/*	uint32_t tx_data[4] = {0xf5,0xC7,0xC8,0xf5};		//{0x75,0x47,0x48,0x75};
-	uint32_t rx_data[4] = {0x00,0x00,0x00,0x00};
-*/	
+	uint16_t i,j,res_data;
+	float ttt;
 	//====初期化====
 	R_PG_Clock_Set();					//クロック設定
 
@@ -38,27 +36,13 @@ int main(void) {
 	timer_Init();						//タイマ系の初期化
 	sensor_Init();						//センサ系の初期化
 	uart_Init();					//シリアル通信の初期化
-	
-/*	pin_write(PC4,1);
-	
-	//timer_start();
+
 	while(1){
-		i = 0x75;
-		pin_write(PC4,0);
-		ms_wait(1000);
-		R_PG_RSPI_TransferAllData_C0(&i,&j,1);
-		//R_PG_RSPI_TransferAllData_C0(tx_data,rx_data,1);
-		//R_PG_RSPI_StartTransfer_C0(0x47,&test1,1);
-		//test_s = test1 + test2;
-		
-		uart_printf("Who am I : \r\n");
-		uart_printf("0x%x,0x%x,0x%x,0x%x\r\n",rx_data[0],rx_data[1],rx_data[2],rx_data[3]);
-		
-		uart_printf("Who am I : %x\r\n",j);
-		pin_write(PC4,1);
-		ms_wait(1000);
+		ttt = GYRO_read();
+		uart_printf("GYRO :%lf \r\n",ttt);	
+		ms_wait(100);
 	}
-*/
+
 
 /*	S12AD.ADANS0.WORD = 0x40;
 	R_PG_ADC_12_StartConversionSW_S12AD0();					

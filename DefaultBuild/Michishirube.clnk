@@ -32,7 +32,6 @@
 -input=DefaultBuild\drive.obj
 -input=DefaultBuild\Interrupt_MTU2.obj
 -input=DefaultBuild\Interrupt_MTU2_TPU.obj
--input=DefaultBuild\R_PG_RSPI_C0.obj
 -input=DefaultBuild\Interrupt_SPI.obj
 -input=DefaultBuild\R_PG_IO_PORT_PB.obj
 -input=DefaultBuild\R_PG_IO_PORT_P0.obj
@@ -40,6 +39,7 @@
 -input=DefaultBuild\R_PG_IO_PORT_P3.obj
 -input=DefaultBuild\R_PG_IO_PORT_P4.obj
 -input=DefaultBuild\R_PG_Timer_CMT_U1.obj
+-input=DefaultBuild\R_PG_SCI_C8.obj
 -library=C:\Renesas\PDG2\lib\RX63N\RX63N_library_64_little.lib
 -noprelink
 -output=DefaultBuild\Michishirube.abs

@@ -1,4 +1,4 @@
-Renesas Optimizing Linker (W2.08.00 )             28-Sep-2018 12:17:34
+Renesas Optimizing Linker (W2.08.00 )             02-Oct-2018 15:51:07
 
 *** Options ***
 
@@ -37,7 +37,6 @@ Renesas Optimizing Linker (W2.08.00 )             28-Sep-2018 12:17:34
 -input=DefaultBuild\drive.obj
 -input=DefaultBuild\Interrupt_MTU2.obj
 -input=DefaultBuild\Interrupt_MTU2_TPU.obj
--input=DefaultBuild\R_PG_RSPI_C0.obj
 -input=DefaultBuild\Interrupt_SPI.obj
 -input=DefaultBuild\R_PG_IO_PORT_PB.obj
 -input=DefaultBuild\R_PG_IO_PORT_P0.obj
@@ -45,6 +44,7 @@ Renesas Optimizing Linker (W2.08.00 )             28-Sep-2018 12:17:34
 -input=DefaultBuild\R_PG_IO_PORT_P3.obj
 -input=DefaultBuild\R_PG_IO_PORT_P4.obj
 -input=DefaultBuild\R_PG_Timer_CMT_U1.obj
+-input=DefaultBuild\R_PG_SCI_C8.obj
 -library=C:\Renesas\PDG2\lib\RX63N\RX63N_library_64_little.lib
 -noprelink
 -output=DefaultBuild\Michishirube.abs
@@ -71,13 +71,13 @@ B_2
 R_2
                                   00001386  0000139f        1a   2
 B
-                                  000013a0  0000b933      a594   4
+                                  000013a0  0000b967      a5c8   4
 R
-                                  0000b934  0000bcd3       3a0   4
+                                  0000b968  0000bd07       3a0   4
 SU
-                                  0000bcd4  0000bdd3       100   4
+                                  0000bd08  0000be07       100   4
 SI
-                                  0000bdd4  0000c0d3       300   4
+                                  0000be08  0000c107       300   4
 PResetPRG
                                   fff80000  fff80030        31   1
 C_1
@@ -103,15 +103,15 @@ D_2
 D
                                   fff80ac0  fff80e5f       3a0   4
 P
-                                  fff80e60  fff91d4c     10eed   1
+                                  fff80e60  fff90f01     100a2   1
 W_1
-                                  fff91d4d  fff91d5d        11   1
+                                  fff90f02  fff90f12        11   1
 W_2
-                                  fff91d5e  fff91d6f        12   2
+                                  fff90f14  fff90f25        12   2
 W
-                                  fff91d70  fff91d70         0   4
+                                  fff90f28  fff90f28         0   4
 L
-                                  fff91d70  fff91f8c       21d   4
+                                  fff90f28  fff910bc       195   4
 $ADDR_C_FFFFFF80
                                   ffffff80  ffffff83         4   1
 FIXEDVECT

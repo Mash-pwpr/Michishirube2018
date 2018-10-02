@@ -42,10 +42,17 @@ void searchA(){												//一次走行　一番基本的な初期装備
 	do{
 		//uart_printf("ad_l: %4d ad_fl:%4d ad_ff:%4d  ad_fr:%4d ad_r:%4d\r\n ", ad_l, ad_fl, ad_ff, ad_fr, ad_r);
 		//uart_printf("route is %x\r\n",route[r_cnt]);
-		if(ad_r > WALL_BASE_R)	cont_r = Cont_kp[0];
-		else			cont_r = Cont_kp[1];
-		if(ad_l > WALL_BASE_L)	cont_l = Cont_kp[0];
-		else			cont_l = Cont_kp[1];		
+		if(ad_r > WALL_BASE_R){
+			cont_r = Cont_kp[0];
+		}else	{
+			cont_r = 0;	
+		//cont_r = Cont_kp[1];
+		}
+		if(ad_l > WALL_BASE_L)	{
+			cont_l = Cont_kp[0];
+		}else{
+			cont_l = 0;		
+		}
 		//----進行----
 		switch(route[r_cnt++]){								//route配列によって進行を決定。経路カウンタを進める
 			//----前進----

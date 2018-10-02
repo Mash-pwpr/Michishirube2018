@@ -66,6 +66,8 @@
         <Category Name="SCI">
           <Path>..\..\..\..\renesas\PDG2_proj\Michishirube\SCI\R_PG_SCI_C1.c</Path>
           <Path>..\..\..\..\renesas\PDG2_proj\Michishirube\SCI\R_PG_SCI_C1.h</Path>
+          <Path>..\..\..\..\Renesas\PDG2_proj\Michishirube\SCI\R_PG_SCI_C8.c</Path>
+          <Path>..\..\..\..\Renesas\PDG2_proj\Michishirube\SCI\R_PG_SCI_C8.h</Path>
         </Category>
         <Category Name="AD_12">
           <Path>..\..\..\..\renesas\PDG2_proj\Michishirube\AD_12\R_PG_ADC_12_S12AD0.c</Path>
@@ -104,10 +106,6 @@
         <Path>..\..\..\..\renesas\PDG2_proj\Michishirube\R_PG_Michishirube.h</Path>
         <Path>..\..\..\..\renesas\PDG2_proj\Michishirube\R_PG_IntFuncsExtern.h</Path>
         <Path>..\..\..\..\renesas\PDG2_proj\Michishirube\R_PG_RPDL_headers.h</Path>
-        <Category Name="RSPI">
-          <Path>..\..\..\..\Renesas\PDG2_proj\Michishirube\RSPI\R_PG_RSPI_C0.c</Path>
-          <Path>..\..\..\..\Renesas\PDG2_proj\Michishirube\RSPI\R_PG_RSPI_C0.h</Path>
-        </Category>
       </Category>
       <Path>auxiliary.c</Path>
       <Path>auxiliary.h</Path>
@@ -224,7 +222,6 @@
           <Path>DefaultBuild\drive.obj</Path>
           <Path>DefaultBuild\Interrupt_MTU2.obj</Path>
           <Path>DefaultBuild\Interrupt_MTU2_TPU.obj</Path>
-          <Path>DefaultBuild\R_PG_RSPI_C0.obj</Path>
           <Path>DefaultBuild\Interrupt_SPI.obj</Path>
           <Path>DefaultBuild\R_PG_IO_PORT_PB.obj</Path>
           <Path>DefaultBuild\R_PG_IO_PORT_P0.obj</Path>
@@ -232,6 +229,7 @@
           <Path>DefaultBuild\R_PG_IO_PORT_P3.obj</Path>
           <Path>DefaultBuild\R_PG_IO_PORT_P4.obj</Path>
           <Path>DefaultBuild\R_PG_Timer_CMT_U1.obj</Path>
+          <Path>DefaultBuild\R_PG_SCI_C8.obj</Path>
         </LinkOrder>
         <CommonOptions>
           <IncludePathForC>..\..\..\..\Renesas\PDG2_proj\Michishirube\RSPI</IncludePathForC>

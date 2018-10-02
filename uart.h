@@ -15,4 +15,8 @@
 ============================================================*/
 		void uart_Init();
 		void uart_printf(const char* format, ...);
+		uint8_t SPI_read_byte(uint8_t);
+		void SPI_write_byte(uint8_t, uint8_t);
+		float GYRO_read(void);
+		
 #endif /* UART_H_ */

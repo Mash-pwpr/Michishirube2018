@@ -43,7 +43,7 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void half_sectionA()
 {
-	MF.FLAG.CTRL = 1;										//制御を有効にする
+	MF.FLAG.CTRL = 1;
 	driveA(HALF_MM, 0);									//半区画のパルス分加速しながら走行。走行後は停止しない
 	get_wall_info();										//壁情報を取得
 }
@@ -192,6 +192,7 @@ void driveA(float dist, unsigned char rs) {					//引数　走行距離　停止
 	//====走行====
 	//----走行開始----
 	//MF.FLAGS = 0x00 | (MF.FLAGS & 0x0F);					//減速・定速・ストップフラグを0に、加速フラグを1にする
+	MF.FLAG.VCTRL = 1;
 	MF.FLAG.ACCL = 1;
 	MF.FLAG.DECL = 0;
 	totalG_mm = totalR_mm = totalL_mm = 0;					//走行距離をリセット
@@ -255,11 +256,13 @@ void driveD(uint16_t dist, unsigned char rs) {
 	//====走行====
 	//----走行開始----
 	//MF.FLAGS = 0x00 | (MF.FLAGS & 0x0F);					//加速・減速・定速・ストップフラグを0にする
+	MF.FLAG.VCTRL = 1;
 	MF.FLAG.ACCL = 0;
 	MF.FLAG.DECL = 0;
 	totalG_mm = totalR_mm = totalL_mm = 0;					//走行距離をリセット
 	drive_start();											//痩躯開始
 	offsetG_mm = rs * 0.5 * max_vel_G * off_dt * 1000;
+	offsetG_mm -= STOP_OFF_MM;
 	
 	//----走行----
 	while((totalR_mm + offsetG_mm) < dist || (totalL_mm + offsetG_mm) < dist){
@@ -268,9 +271,15 @@ void driveD(uint16_t dist, unsigned char rs) {
 	if(rs){
 		MF.FLAG.DECL = 1;										//減速フラグを1に
 		while(totalR_mm < dist || totalL_mm < dist){
-		}	
+		}
+		
 		t_cnt_r = t_cnt_l = 0;
-		ms_wait(500);
+		targ_total_mm = (float)dist;
+		MF.FLAG.VCTRL = 0;
+		MF.FLAG.XCTRL = 1;
+		ms_wait(1000);
+		MF.FLAG.XCTRL = 0;
+		
 	}
 	
 	//----停止措置----
@@ -368,6 +377,7 @@ void driveC(uint16_t dist, unsigned char rs)			//引数　時間　停止許可�
 	totalG_mm = totalR_mm = totalL_mm = 0;					//走行距離をリセット
 	t_cnt_r = t_cnt_l = 0;
 	//====回転開始====
+	MF.FLAG.VCTRL = 1;
 	MF.FLAG.ACCL = 1;
 	MF.FLAG.DECL = 0;
 	drive_start();											//走行開始

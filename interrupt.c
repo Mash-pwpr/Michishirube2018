@@ -24,7 +24,7 @@ void Mtu3IcCmDIntFunc(void){		//パルス一周期でやると呼び出される
 	pin_write(P55,0);
 
 	//duty_l = Kvolt * accel_l / VOLT_BAT + kpvL + kpdL;
-	duty_l = KL * (kvpL - kvdL + kviL + sen_dl);
+	duty_l = KL * (vpid_L + sen_dl + xpid_L);
 	
 	if(duty_l < 0){
 		MF.FLAG.L_DIR = 0;					
@@ -34,11 +34,11 @@ void Mtu3IcCmDIntFunc(void){		//パルス一周期でやると呼び出される
 	}
 	
 	if(duty_l > 1){
-		duty_l = 0.90;
+		duty_l = 0.70;
 	}else if(duty_l <= 0.01){
 		duty_l = 0.01;	
 	}
-		duty_oL = duty_l;
+		//duty_oL = duty_l;
 
 /*		//----停止処理----
 		if(MF.FLAG.STOP){															
@@ -84,23 +84,21 @@ void Mtu4IcCmDIntFunc(void){			//右モータ制御関数
 	pin_write(PA6,0);
 
 	//duty_r = Kvolt * accel_r / VOLT_BAT + kpvR + kpdR;
-	duty_r = KR * (kvpR - kvdR + kviR + sen_dr);
-	
+	duty_r = KR * (vpid_R + sen_dr + xpid_R);
 	if(duty_r < 0){
 		MF.FLAG.R_DIR = 0;
-		duty_oR = duty_r;
+		//duty_oR = duty_r;
 		duty_r = - duty_r;	
 	}else if(duty_r > 0){
 		MF.FLAG.R_DIR = 1;					
-		duty_oR = duty_r;
+		//duty_oR = duty_r;
 	}
 	
 	if(duty_r > 1){
-		duty_r = 0.90;
+		duty_r = 0.70;
 	}else if(duty_r <= 0.01){
 		duty_r = 0.01;	
 	}
-		
 	
 /*	//----停止処理----
 	if(MF.FLAG.STOP){			
@@ -290,7 +288,7 @@ void Cmt2IntFunc(){
 	pulse_pre_r = pulse_r;
 	pulse_pre_l = pulse_l;
 		
-	vel_R = xR;	//距離[mm]を時間で除してに直す[m/s] 
+	vel_R = xR;					//距離[mm]を時間で除してに直す[m/s] 
 	vel_L = xL;
 	vel_G = xG;
 		
@@ -308,19 +306,37 @@ void Cmt2IntFunc(){
 	//偏差の計算
 	dif_vel_R = (targ_vel[t_cnt_r] * velR0) - vel_R;
 	dif_vel_L = (targ_vel[t_cnt_l] * velL0) - vel_L;
-	//偏差のP制御
-	kvpR = KPR * dif_vel_R;				
-	kvpL = KPL * dif_vel_L;
-	//偏差のD制御
-	kvdR = KDR * (dif_vel_R - dif_pre_vel_R);	
-	kvdL = KDL * (dif_vel_L - dif_pre_vel_L);
-	//偏差のI制御
-	kviR += KIR * dif_vel_R;
-	kviL += KIL * dif_vel_L;
 	
+	dif_x_R = (targ_total_mm - totalR_mm);
+	dif_x_L = (targ_total_mm - totalL_mm);	
+	//偏差のP制御
+	kvpR = V_KP * dif_vel_R;				
+	kvpL = V_KP * dif_vel_L;
+	
+	kxpR = X_KP * dif_vel_R;
+	kxpL = X_KP * dif_vel_L;
+	//偏差のD制御
+	kvdR = V_KD * (dif_vel_R - dif_pre_vel_R);	
+	kvdL = V_KD * (dif_vel_L - dif_pre_vel_L);
+	
+	kxdR = X_KD * (dif_x_R - dif_pre_x_R);
+	kxdL = X_KD * (dif_x_L - dif_pre_x_L);
+	//偏差のI制御 現在速度係数０とコメントアウトで使っていない
+//	kviR += V_KIR * dif_vel_R;
+//	kviL += V_KIL * dif_vel_L;
+	
+	//PID制御値を統合
+	vpid_R = (kvpR - kvdR + kviR) * MF.FLAG.VCTRL;
+	vpid_L = (kvpL - kvdL + kviR) * MF.FLAG.VCTRL;
+	
+	xpid_R = (kxpR - kxdR) * MF.FLAG.XCTRL;
+	xpid_L = (kxpL - kxdL) * MF.FLAG.XCTRL;
 	//現在の偏差をバッファに保存 D制御で使う
 	dif_pre_vel_R = dif_vel_R;		
-	dif_pre_vel_L = dif_vel_L;	
+	dif_pre_vel_L = dif_vel_L;
+	
+	dif_pre_x_R = dif_x_R;
+	dif_pre_x_L = dif_x_L;
 }
 
 

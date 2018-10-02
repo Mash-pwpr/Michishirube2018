@@ -274,11 +274,6 @@
       <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
       <ParentItem>d2b4b2cf-d60a-42ae-a9ab-845dfed1d6a4</ParentItem>
     </Instance>
-    <Instance Guid="c72a816f-e3ed-4cf6-9c2a-1c1bf94f5a01">
-      <Name>RSPI</Name>
-      <Type>Category</Type>
-      <ParentItem>d2b4b2cf-d60a-42ae-a9ab-845dfed1d6a4</ParentItem>
-    </Instance>
     <Instance Guid="3f589a7e-f1bd-4446-ae83-e7990127ffc6">
       <Name>R_PG_Clock.c</Name>
       <Type>File</Type>
@@ -559,6 +554,20 @@
       <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
       <ParentItem>8c880aa1-7c4f-4a9a-a6f2-2254537d502a</ParentItem>
     </Instance>
+    <Instance Guid="5ec89850-fabb-4db3-9bd1-87d3ae8dcf41">
+      <Name>R_PG_SCI_C8.c</Name>
+      <Type>File</Type>
+      <RelativePath>..\..\..\..\Renesas\PDG2_proj\Michishirube\SCI\R_PG_SCI_C8.c</RelativePath>
+      <TreeImageGuid>941832c1-fc3b-4e1b-94e8-01ea17128b42</TreeImageGuid>
+      <ParentItem>8c880aa1-7c4f-4a9a-a6f2-2254537d502a</ParentItem>
+    </Instance>
+    <Instance Guid="08c192b8-a98f-4331-b064-ac66647c5025">
+      <Name>R_PG_SCI_C8.h</Name>
+      <Type>File</Type>
+      <RelativePath>..\..\..\..\Renesas\PDG2_proj\Michishirube\SCI\R_PG_SCI_C8.h</RelativePath>
+      <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
+      <ParentItem>8c880aa1-7c4f-4a9a-a6f2-2254537d502a</ParentItem>
+    </Instance>
     <Instance Guid="a84589f1-a8de-45d2-86c0-db2e27ae0f68">
       <Name>R_PG_ADC_12_S12AD0.c</Name>
       <Type>File</Type>
@@ -769,20 +778,6 @@
       <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
       <ParentItem>29598789-6ede-4549-a85f-a4f01d644813</ParentItem>
     </Instance>
-    <Instance Guid="82c97500-882f-47be-bca8-45102b9a8da8">
-      <Name>R_PG_RSPI_C0.c</Name>
-      <Type>File</Type>
-      <RelativePath>..\..\..\..\Renesas\PDG2_proj\Michishirube\RSPI\R_PG_RSPI_C0.c</RelativePath>
-      <TreeImageGuid>941832c1-fc3b-4e1b-94e8-01ea17128b42</TreeImageGuid>
-      <ParentItem>c72a816f-e3ed-4cf6-9c2a-1c1bf94f5a01</ParentItem>
-    </Instance>
-    <Instance Guid="d5d8b74f-d70f-4936-997e-ba166424a4ef">
-      <Name>R_PG_RSPI_C0.h</Name>
-      <Type>File</Type>
-      <RelativePath>..\..\..\..\Renesas\PDG2_proj\Michishirube\RSPI\R_PG_RSPI_C0.h</RelativePath>
-      <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
-      <ParentItem>c72a816f-e3ed-4cf6-9c2a-1c1bf94f5a01</ParentItem>
-    </Instance>
   </Class>
   <Class Guid="fb98844b-2c27-4275-9804-f6e63e204da0">
     <Instance Guid="fb98844b-2c27-4275-9804-f6e63e204da0">
@@ -908,7 +903,7 @@
       <SourceItemType38>CSource</SourceItemType38>
       <SourceItemGuid39>9ccb1987-d65d-4d52-ba2a-bf76686fd6f9</SourceItemGuid39>
       <SourceItemType39>CSource</SourceItemType39>
-      <SourceItemGuid40>82c97500-882f-47be-bca8-45102b9a8da8</SourceItemGuid40>
+      <SourceItemGuid40>5ec89850-fabb-4db3-9bd1-87d3ae8dcf41</SourceItemGuid40>
       <SourceItemType40>CSource</SourceItemType40>
       <SourceItemCount>41</SourceItemCount>
       <LastDeviceChangedCounter>0</LastDeviceChangedCounter>
@@ -1395,7 +1390,7 @@ D_2=R_2
       <LinkOptionCommandLine-DefaultValue />
       <LinkOptionSplitVect-DefaultValue>False</LinkOptionSplitVect-DefaultValue>
       <IsLockedByUser>False</IsLockedByUser>
-      <TimeTagModified--0>-8586682598227412262</TimeTagModified--0>
+      <TimeTagModified--0>-8586632374870819502</TimeTagModified--0>
       <LinkOptionCpu-0>False</LinkOptionCpu-0>
       <LinkOptionForm-0>Absolute</LinkOptionForm-0>
       <LinkOptionFormConvert-0>Stype</LinkOptionFormConvert-0>
@@ -2115,14 +2110,6 @@ D_2=R_2
       <ItemAddTime>636694250508553652</ItemAddTime>
       <ItemAddTimeCount>0</ItemAddTimeCount>
     </Instance>
-    <Instance Guid="82c97500-882f-47be-bca8-45102b9a8da8">
-      <ItemAddTime>636697981845416664</ItemAddTime>
-      <ItemAddTimeCount>0</ItemAddTimeCount>
-    </Instance>
-    <Instance Guid="d5d8b74f-d70f-4936-997e-ba166424a4ef">
-      <ItemAddTime>636697981857136689</ItemAddTime>
-      <ItemAddTimeCount>0</ItemAddTimeCount>
-    </Instance>
     <Instance Guid="9ccb1987-d65d-4d52-ba2a-bf76686fd6f9">
       <ItemAddTime>636697981858699342</ItemAddTime>
       <ItemAddTimeCount>0</ItemAddTimeCount>
@@ -2181,6 +2168,14 @@ D_2=R_2
     </Instance>
     <Instance Guid="1ccd4270-a98f-4b01-8e60-7cc28b76ced3">
       <ItemAddTime>636716617787144552</ItemAddTime>
+      <ItemAddTimeCount>0</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="5ec89850-fabb-4db3-9bd1-87d3ae8dcf41">
+      <ItemAddTime>636739981282831925</ItemAddTime>
+      <ItemAddTimeCount>0</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="08c192b8-a98f-4331-b064-ac66647c5025">
+      <ItemAddTime>636739981295595875</ItemAddTime>
       <ItemAddTimeCount>0</ItemAddTimeCount>
     </Instance>
     <Instance Guid="a7be515f-f007-45ed-9059-4e1500c0f74d">
@@ -2344,7 +2339,7 @@ D_2=R_2
       <SourceItem39-IsLockedByUser>False</SourceItem39-IsLockedByUser>
       <SourceItem39-BuildingTarget-0>True</SourceItem39-BuildingTarget-0>
       <SourceItem39-IndividualCompileOption-0>False</SourceItem39-IndividualCompileOption-0>
-      <TimeTagModified-SourceItem40--0>-8586674379009359144</TimeTagModified-SourceItem40--0>
+      <TimeTagModified-SourceItem40--0>-8586632379571943883</TimeTagModified-SourceItem40--0>
       <SourceItem40-IsLockedByUser>False</SourceItem40-IsLockedByUser>
       <SourceItem40-BuildingTarget-0>True</SourceItem40-BuildingTarget-0>
       <SourceItem40-IndividualCompileOption-0>False</SourceItem40-IndividualCompileOption-0>

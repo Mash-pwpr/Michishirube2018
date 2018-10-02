@@ -24,13 +24,16 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++
 void uart_Init(){
 	R_PG_SCI_Set_C1();		//シリアル通信用準備
+	R_PG_SCI_Set_C8();
+	pin_write(PC4,1);		//SPI通信のCSピンを初期化しておく
 	
-	R_PG_RSPI_Set_C0();		//ジャイロ用SPI設定
-	R_PG_RSPI_SetCommand_C0();
+	SPI_write_byte(0x6b,0x00);	//PWR_MGMT_1レジスタ
+	SPI_write_byte(0x1a,0x00);	//CONFIG レジスタ
+	SPI_write_byte(0x1b,0x18);	//GYRO_CONFIG　レジスタ
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
-//UART_printf
+//uart_printf
 //	UARTで標準出力を行う
 //	対応指定子	：%s,%c,%d,%u,%X,%ld,%lu,%lX
 //				　数値はリーディングゼロと表示桁数指定可能
@@ -54,11 +57,56 @@ void uart_printf(const char *format, ...) {
     }
     va_end(arg);
 }
+    
+//+++++++++++++++++++++++++++++++++++++++++++++++
+//SPI_read_byte
+//	RXの簡易SPI通信でジャイロとお話しするよ！！
+// 引数1：受け取りたいデータのアドレス
+// 戻り値：受け取りたいデータの中身
+//+++++++++++++++++++++++++++++++++++++++++++++++
+uint8_t SPI_read_byte(uint8_t addr){
+	uint8_t ret, val;
+	uint8_t tx_data[2];
+	uint8_t rx_data[2] = {0,0};
+	
+	ret = addr | 0x80;
+	tx_data[0] = ret;
+	tx_data[1] = ret;
 
-void Spi0ErIntFunc(){
-	//R_PG_RSPI_StopModule_C0();
-	while(1){
-		uart_printf("ERROR...\r\n");
-	}
+	pin_write(PC4,0);				//csピンをLOW　にしてSPIをイネーブルに
+	R_PG_SCI_SPIMode_Transfer_C8(tx_data,rx_data,2);
+	pin_write(PC4,1);				//csピンをHIGHにしてディスネーブルに
+	//uart_printf("0x%x,0x%x\r\n",rx_data[0],rx_data[1]);
+	val = rx_data[1];
+	
+	return val;
 }
 
+//+++++++++++++++++++++++++++++++++++++++++++++++
+//SPI_write_byte
+//	RXの簡易SPI通信でジャイロとお話しするよ！！
+// 引数1：書き込みたいデータのアドレス
+// 引数2：書き込みたいデータの内容
+//+++++++++++++++++++++++++++++++++++++++++++++++
+
+void SPI_write_byte(uint8_t addr, uint8_t data){
+	uint8_t ret;
+	uint8_t tx_data[2];
+	uint8_t rx_data[2] = {0,0};
+	
+	ret = addr & 0x7f;
+	tx_data[0] = ret;
+	tx_data[1] = data;
+	pin_write(PC4,0);
+	R_PG_SCI_SPIMode_Transfer_C8(tx_data,rx_data,2);
+	pin_write(PC4,1);
+	
+}
+
+float GYRO_read(void){
+	int16_t gyro_z;
+	float omega;
+	gyro_z = (int16_t)(SPI_read_byte(0x47) << 8 | SPI_read_byte(0x48));	//0x47が上位，0x48が下位の16bitデータでジャイロ値を取得
+	omega = (float)(gyro_z / GYRO_FIX);
+	return omega;
+}

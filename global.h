@@ -50,7 +50,7 @@
 #define DR_CENT_SET 95		//後ろ壁から中央までのパルス数
 #define CENTER_TIME 350
 
-#define CONT0 0.0001				//壁Pゲイン
+#define CONT0 1 //0.0001				//壁Pゲイン
 #define CONT1 0.000025				//壁Pゲイン
 #define CONT2 0.000025				//壁Pゲイン
 #define CONT3 0.0001				//壁Pゲイン
@@ -59,9 +59,12 @@
 #define ROT_TIME 355
 #define ROT180_TIME 500
 
+#define GYRO_FIX 16.4
+
 //----DC走行関連----
 #define HALF_MM 90
 #define ONE_MM 180
+#define STOP_OFF_MM 20
 
 //----テーブル速度関連----
 #define MAXSPEED_S 1000		//探索走行時の速度の最大の要素数
@@ -82,15 +85,15 @@
 #define KR 1.2
 #define KL 1
 
-//---PIDゲイン---
-#define KPR 1.3
-#define KPL 1.3
+//---速度PIDゲイン---
+#define V_KP 1.3
+#define X_KP 1.3
 
-#define KDR 0.2
-#define KDL 0.2
+#define V_KD 0.2
+#define X_KD 0.1
 
-#define KIR 0
-#define KIL 0
+#define V_KI 0
+
 
 //----タイマ関連----
 #define DEFGRC 22000		//デフォルトのインターバル
@@ -99,22 +102,22 @@
 		センサ系t
 ------------------------------------------------------------*/
 //----壁判断基準----
-#define WALL_BASE_F 800		//前壁
-#define WALL_BASE_L 500		//左壁
-#define WALL_BASE_R 500		//右壁
+#define WALL_BASE_F 1000		//前壁
+#define WALL_BASE_L 350		//左壁
+#define WALL_BASE_R 350		//右壁
 
 //----制御基準値----
 #define SREF_MIN_L 150	//左制御基準下限-20
-#define SREF_MAX_L 2000	//左制御基準上限280
+#define SREF_MAX_L 800	//左制御基準上限280
 #define SREF_MIN_R 200	//右制御基準下限-20
-#define SREF_MAX_R 2000 //右制御基準上限280
+#define SREF_MAX_R 800 //右制御基準上限280
 
 /*------------------------------------------------------------
 		探索系
 ------------------------------------------------------------*/
 //----ゴール座標----
-#define GOAL_X 3	//7
-#define GOAL_Y 3	//7
+#define GOAL_X 7	//7
+#define GOAL_Y 7	//7
 
 /*------------------------------------------------------------
 		共用・構造体の定義
@@ -144,8 +147,8 @@
 			unsigned char STOP:1;		//停止フラグ(B7)
 			unsigned char R_DIR:1;		//予備ビット(B8)		
 			unsigned char L_DIR:1;		//予備フラグ(B9)
-			unsigned char FRONT:1;		//予備フラグ(B10)
-			unsigned char BEHIND:1;		//予備フラグ(B11)
+			unsigned char VCTRL:1;		//予備フラグ(B10)
+			unsigned char XCTRL:1;		//予備フラグ(B11)
 			unsigned char S5:1;		//予備フラグ(B12)
 			unsigned char S6:1;		//予備フラグ(B13)
 			unsigned char S7:1;		//予備フラグ(B14)

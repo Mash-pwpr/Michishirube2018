@@ -54,7 +54,6 @@ void sensor_Init(void){
 	R_PG_IO_PORT_Set_PE();
 }
 
-
 // センサ系，走行系，探索系　の変数初期化
 void val_Init(void){
 	int i;
@@ -67,11 +66,14 @@ void val_Init(void){
 	time = 0;
 	velR0 = velL0 = 1;
 
+	//足回り系？
 	totalR_mm = totalL_mm = totalG_mm = 0;
 	dif_pre_vel_R = dif_pre_vel_L = 0;
+	dif_pre_x_R = dif_pre_x_L = 0;
 	t_cnt_r = t_cnt_l = 0;
 	
-	kvpR = kvdR = kviR =  kvpL = kvdL = kviL = 0;
+	kvpR = kvdR = kviR = kvpL = kvdL = kviL = 0;
+	kxpR = kxdR = kxpL = kxdL = 0;
 	Cont_kp[0] = CONT0;
 	Cont_kp[1] = CONT1;
 	Cont_kp[2] = CONT2;
@@ -81,7 +83,7 @@ void val_Init(void){
 	cont_r = cont_l = Cont_kp[0];
 	
 	accel = 1.0;
-	max_vel_G = 0.5;
+	max_vel_G = 0.35;
 	off_dt = max_vel_G / accel;
 	
 	for(i=0;i<2000;i++){

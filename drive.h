@@ -21,7 +21,7 @@
 		各種定数･変数宣言
 ============================================================*/
 	//----動作方向関連----
-	#define MT_FWD_L	1			//CW/CCWで前に進む出力(左)
+//	#define MT_FWD_L	1			//CW/CCWで前に進む出力(左)
 	#define MT_BACK_L	0			//CW/CCWで後ろに進む出力(左)
 	#define MT_FWD_R	1			//CW/CCWで前に進む出力(右)
 	#define MT_BACK_R	0		//CW/CCWで後ろに進む出力(右)
@@ -43,12 +43,23 @@
 	const uint16_t table[] = {
 		#include "table.h"
 	};								//table.hに貼り付けた値を保持する配列
-	volatile float vel_R, vel_L,vel_G,xR, xL,xG;				//現在速度，距離変化
-	volatile float targ_vel[2000],max_vel_G;				//目標速度
+	volatile float vel_R, vel_L,vel_G,xR, xL,xG;			//現在速度，距離変化
+	volatile float targ_vel[2000],max_vel_G;			//目標速度
+	volatile float targ_total_mm;					//制止するための目標距離
+	
+	/***速度のPID計算用***/
 	volatile float dif_vel_R,dif_vel_L;				//速度偏差
-	volatile float dif_pre_vel_R, dif_pre_vel_L;			//速度偏差
+	volatile float dif_pre_vel_R,dif_pre_vel_L;			//速度偏差
 	volatile float kvpR,kvdR,kviR,kvpL,kvdL,kviL;			//PID制御量
 	volatile int16_t velR0,velL0;
+	volatile float vpid_R,vpid_L;
+	
+	/***位置のPID計算***/
+	volatile float dif_x_R,dif_x_L;
+	volatile float dif_pre_x_R,dif_pre_x_L;
+	volatile float kxpR,kxdR,kxdL,kxpL;
+	volatile float xpid_R,xpid_L;
+	
 	
 	volatile uint16_t t_cnt_l, t_cnt_r,time, ms_time;		//テーブルカウンタ
 	volatile uint16_t minindex, maxindex;				//最低速度・最大速度
@@ -76,9 +87,19 @@
 	extern volatile float dif_pre_vel_R, dif_pre_vel_L;
 	extern volatile float vel_R,vel_L,vel_G,xR, xL,xG;		//両輪速度
 	extern volatile float targ_vel[2000],max_vel_G;	        //目標速度
+	extern volatile float targ_total_mm;
+	
+	/***速度のPID計算用***/
 	extern volatile float dif_vel_R, dif_vel_L;
 	extern volatile float kvpR,kvdR,kviR,kvpL,kvdL,kviL;
 	extern volatile int16_t velR0,velL0;
+	extern volatile float vpid_R,vpid_L;
+
+	/***位置のPID計算***/
+	extern volatile float dif_x_R,dif_x_L;
+	extern volatile float dif_pre_x_R,dif_pre_x_L;
+	extern volatile float kxpR,kxdR,kxdL,kxpL;	
+	extern volatile float xpid_R,xpid_L;
 	
 	extern volatile uint16_t t_cnt_l, t_cnt_r,time, ms_time;		
 	extern volatile uint16_t minindex, maxindex;		//最低速度・最大速度
